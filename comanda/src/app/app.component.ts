@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import  firebase  from 'firebase/compat/app';
 import { environment } from 'src/environments/environment';
 @Component({
@@ -7,8 +8,9 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor() {}
+  constructor(private router:Router) {}
   ngOnInit(){
     firebase.initializeApp(environment.firebase);
+    this.router.navigateByUrl('splash');
   }
 }
