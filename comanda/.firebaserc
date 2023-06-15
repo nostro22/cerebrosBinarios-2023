@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "lacomanda-c8c6b": {
+      "hosting": {
+        "app": [
+          "lacomanda-c8c6b"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "lacomanda-c8c6b"
+  }
+}
