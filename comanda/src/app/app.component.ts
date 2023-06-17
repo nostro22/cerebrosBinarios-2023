@@ -11,6 +11,6 @@ export class AppComponent {
   constructor(private router:Router) {}
   ngOnInit(){
     firebase.initializeApp(environment.firebase);
-    this.router.navigateByUrl('splash');
+    this.router.navigateByUrl('home',{replaceUrl:true});
   }
 }
