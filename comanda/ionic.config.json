@@ -1,7 +1,5 @@
 {
-  "name": "comanda",
-  "integrations": {
-    "capacitor": {}
-  },
+  "name": "ionic-app-base",
+  "integrations": {},
   "type": "angular"
 }
