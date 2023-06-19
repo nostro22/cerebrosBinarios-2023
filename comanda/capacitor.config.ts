@@ -2,16 +2,14 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
-  appName: 'comanda',
+  appName: 'La Comanda PPS SP',
   webDir: 'www',
-  server: {
-    androidScheme: 'https'
-  },
-  "plugins": {
+  bundledWebRuntime: false,
+  plugins: {
     "SplashScreen": {
-      "launchShowDuration": 1000,
-      "launchAutoHide": true,
-      "launchFadeOutDuration": 1000,
+     // "launchShowDuration": 1000,
+      "launchAutoHide": false,
+      //"launchFadeOutDuration": 1000,
       "backgroundColor": "#ffffffff",
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP",
@@ -23,8 +21,16 @@ const config: CapacitorConfig = {
       "splashImmersive": true,
       "layoutName": "launch_screen",
       "useDialog": true
-    }
-  }
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+      
+    },
+  
+   
+    
+  },
+  
 };
 
 export default config;

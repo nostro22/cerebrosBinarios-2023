@@ -15,7 +15,7 @@
       <button class="btn m-1 w-100 h-100" (click)="cambiarChart(1)">Valoración del servicio</button>
       <button class="btn m-1 w-100 h-100" (click)="cambiarChart(2)">Variedad menú</button>
       <button class="btn m-1  w-100" (click)="cambiarChart(3)">Precio adecuado</button>
-      <button class="btn m-1  w-100" (click)="cambiarChart(4)">Recomendarían</button>
+      <button class="btn m-1  w-100" (click)="cambiarChart(4)">recomendarían</button>
     </div>
 
 
@@ -35,7 +35,7 @@
         <canvas id="chartClientePrecioAdecuado"></canvas>
       </div>
       <div [ngClass]="{'invisible': chartActivo!=4}">
-        <h4>Recomendarían</h4>
+        <h4>recomendarían</h4>
         <canvas id="chartClienteRecomendaria"></canvas>
       </div>
     </div>

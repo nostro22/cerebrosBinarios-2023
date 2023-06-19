@@ -27,7 +27,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 })
 export class ChartsEncuestaClientesPage implements OnInit {
   @ViewChild(IonSlides) slides: IonSlides;
-  chart: Chart;
+  chart: any;
   public chartActivo = 1;
   listadoEncuestasClientes: any[] = [];
   clienteActivo: any = null;
