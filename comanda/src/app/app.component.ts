@@ -1,16 +1,21 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import  firebase  from 'firebase/compat/app';
-import { environment } from 'src/environments/environment';
+import { Component, OnInit } from '@angular/core';
+import { Platform } from '@ionic/angular';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
-  constructor(private router:Router) {}
-  ngOnInit(){
-    firebase.initializeApp(environment.firebase);
-    this.router.navigateByUrl('home',{replaceUrl:true});
+export class AppComponent implements OnInit{
+  constructor(
+    private platform: Platform,
+  ) {
+    this.platform.backButton.subscribeWithPriority(10, () => {
+    });
   }
+  ngOnInit(): void {
+    window.screen.orientation.lock('portrait');
+  }
+
+  
 }

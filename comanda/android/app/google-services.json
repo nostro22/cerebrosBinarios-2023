@@ -33,6 +33,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:194598635597:android:c79c8033579f4e6940f404",
+        "android_client_info": {
+          "package_name": "la.comanda.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "194598635597-cfcd4onl4uup5ec7jp4jr5n3t7djiiev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxOjou6lwfF-J4n4FgKBtx7AZFPmD35iY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "194598635597-cfcd4onl4uup5ec7jp4jr5n3t7djiiev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
