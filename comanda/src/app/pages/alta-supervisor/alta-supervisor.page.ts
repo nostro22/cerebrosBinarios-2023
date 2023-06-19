@@ -52,9 +52,8 @@ export class AltaSupervisorPage implements OnInit {
   ngOnInit() {}
 
   async registrar() {
-    if (
-      this.forma.get('contrasena1').value != this.forma.get('contrasena2').value
-    ) {
+    if (this.forma.get('contrasena1').value != this.forma.get('contrasena2').value)
+    {
       this.presentToast(
         'Las contraseñas deben ser iguales!',
         'danger',
@@ -82,7 +81,7 @@ export class AltaSupervisorPage implements OnInit {
         this.supervisor.email = this.forma.get('email')!.value;
         this.supervisor.contrasena = this.forma.get('contrasena1')!.value;
         this.supervisor.foto = this.foto;
-
+console.log(this.supervisor);/*  */
         const user = await this.authService.onRegister(this.supervisor, true);
         this.spinner = false;
 

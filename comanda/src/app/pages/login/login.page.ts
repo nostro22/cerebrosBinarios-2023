@@ -75,14 +75,14 @@ export class LoginPage implements OnInit {
     this.mostrarSpinner = true;
     setTimeout(() => {
       this.mostrarSpinner = false;
-    }, 3000);
+    }, 5000);
     this.user.email = this.forma.get('correo')!.value;
     this.user.contrasena = this.forma.get('contrasena')!.value;
     const user = await this.authService.onLogin(this.user);
     if (user != null) {
       this.sonidoInicio.play();
       console.info('usuario encontrado: ', user);
-      await new Promise((f) => setTimeout(f, 500));
+      await new Promise((f) => setTimeout(f, 1500));
       if (this.authService.UsuarioActivo.perfil == 'empleado') {
         this.presentToast('Exito!', 'success', 'thumbs-up-outline');
         this.router.navigate(['empleado-encuesta']);

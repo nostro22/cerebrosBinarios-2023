@@ -1,5 +1,16 @@
 <ion-content [ngClass]="scanActivo?'scanner-activo':''">
-  <ion-header class="bg-dark" style="font-size: 1.4rem">ALTA EMPLEADO</ion-header>
+  <ion-header class="bg-dark" style="height: 45px;" >
+    <ion-toolbar style="height: 45px;">
+      <ion-buttons slot="start">
+        <a routerLink="/menu-altas"><ion-icon style="color: white; font-size: 25px; margin-left: 7px;" name="arrow-back-outline"></ion-icon></a> 
+      </ion-buttons>
+      
+      <ion-title class="ion-text-center">
+        ALTA EMPLEADO
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
 
 
   <div class="spinner">

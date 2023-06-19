@@ -16,7 +16,6 @@ import { LoadingComponent } from 'src/app/componentes/loading/loading.component'
     IonicModule,
     LoginPageRoutingModule,
     ReactiveFormsModule
-
   ],
   declarations: [LoginPage, LoadingComponent]
 })

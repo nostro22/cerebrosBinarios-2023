@@ -1,5 +1,4 @@
-
-
+<app-loading *ngIf="auth.mostrarSpinner"></app-loading>
 <ion-content>
   <br>
   <div class="d-flex justify-content-center">
@@ -30,7 +29,7 @@
 
            <div >
             <div class="div_botones_mesas">
-              <ion-button style="width: 100%;" (click)="EntregarPedido(pedido)" expand="block"><ion-icon name="restaurant-outline"></ion-icon>Entregar</ion-button>
+              <ion-button style="width: 100%;" (click)="EntregarPedido(pedido)" expand="block"><ion-icon style="margin-right: 8px;" name="restaurant-outline"></ion-icon>Entregar</ion-button>
               <!-- <button (click)="EntregarPedido(pedido)" class="boton boton_mesa" >Entregar</button> -->
             </div>
           </div>
