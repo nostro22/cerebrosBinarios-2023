@@ -1,0 +1,22 @@
+<app-loading *ngIf="mostrarSpinner"></app-loading>
+<ion-content>
+  <div class="simon-dice">
+    <div class="contenedor-botones">
+      <h1 class="titulo-simondice">SIMON QUINCE</h1>
+      <p class="puntuacion">
+        Puntuación: {{ puntuacion }}
+  
+      </p>
+      <div class="buttons ">
+        <button class="square" *ngFor="let color of colors" [ngClass]="color" (click)="handleButtonClick(color)">
+  
+        </button>
+      </div>
+      <button class="btn-opcion" (click)="startGame()" [disabled]="gameStarted">{{ gameStarted ? 'Partida en proceso...' :
+        'Comenzar partida' }}</button>
+      <div class="message" [ngClass]="messageClass">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+</ion-content>
