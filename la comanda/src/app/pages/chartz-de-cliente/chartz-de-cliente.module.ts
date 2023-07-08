@@ -15,8 +15,7 @@ import { ChartzDeClientePage } from './chartz-de-cliente.page';
     IonicModule,
     ChartzDeClientePageRoutingModule
   ],
-  declarations: [
-    ChartzDeClientePage 
+  declarations: [ 
   ]
 })
 export class ChartzDeClientePageModule {}

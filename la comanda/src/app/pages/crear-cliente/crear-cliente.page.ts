@@ -1,12 +1,12 @@
-import { Component,  OnInit } from '@angular/core';
-import {FormGroup,Validators,FormBuilder} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Camera, CameraResultType } from '@capacitor/camera';
-import { LoadingController, ToastController } from '@ionic/angular';
 import { QrscannerService } from 'src/app/servicios/qrscanner.service';
 import { AuthService } from 'src/app/servicios/auth.service';
 import { Router } from '@angular/router';
 import { FirestoreService } from 'src/app/servicios/firestore.service';
 import { PushService } from 'src/app/servicios/push.service';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 @Component({
   selector: 'app-alta-cliente',
   templateUrl: './crear-cliente.page.html',
@@ -18,7 +18,6 @@ export class CrearClientePage implements OnInit {
   scanActivo = false;
   foto: any;
   faltaFoto: boolean = false;
-  spinner: boolean = false;
   user: any = null;
 
   tokenSupervisores: string[] = [];
@@ -30,8 +29,7 @@ export class CrearClientePage implements OnInit {
     public formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private loadingController: LoadingController,
-    private toastController: ToastController,
+    private notificacionesS: NotificacionesService,
     public scaner: QrscannerService,
     private firestoreService: FirestoreService,
     private pushService: PushService
@@ -50,7 +48,6 @@ export class CrearClientePage implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.cliente.tipo);
     this.firestoreService.traerSupervisores().subscribe((supervisores: any) => {
       this.tokenSupervisores = [];
       supervisores.forEach((sup) => {
@@ -62,10 +59,10 @@ export class CrearClientePage implements OnInit {
   }
 
   async registrar() {
-    console.log(this.cliente);
-    
+    this.notificacionesS.showSpinner();
+    try {
       if (!this.foto) {
-        this.presentToast(
+        this.notificacionesS.presentToast(
           'Error! Debe agregar una foto',
           'danger',
           'alert-circle-outline'
@@ -75,13 +72,13 @@ export class CrearClientePage implements OnInit {
           this.faltaFoto = false;
         }, 1000);
       } else {
-        this.presentToast('Registrando!', 'success', 'thumbs-up-outline');
+        this.notificacionesS.presentToast('Registrando!', 'success', 'thumbs-up-outline');
         this.cliente.nombre = this.formularioAlta.get('nombre')!.value;
         this.cliente.perfil = 'cliente';
         this.cliente.tipo = this.formularioAlta.get('tipo')!.value;
         this.cliente.foto = this.foto;
 
-        this.spinner = true;
+        this.notificacionesS.showSpinner();
 
         if (this.formularioAlta.get('tipo')!.value === 'registrado') {
           this.cliente.aprobado = false;
@@ -98,41 +95,42 @@ export class CrearClientePage implements OnInit {
             this.user = await this.authService.onRegister(this.cliente, true);
           } else {
             console.log('No registra');
-            this.presentToast(
+            this.notificacionesS.presentToast(
               'Error! Las contraseñas deben coincidir.',
               'danger',
               'alert-circle-outline'
             );
           }
-          
-        } else {
-          this.user = await this.authService.onRegisterAnonimo(
-            this.cliente,
-            true
-          );
 
+        } else {
+          this.user = await this.authService.onRegisterAnonimo(this.cliente, true);
           this.router.navigate(['home-cliente']);
         }
-
-        this.spinner = false;
         if (this.user) {
           if (this.cliente.tipo == 'registrado') {
-            this.enviarPushASupervisores(); 
+            this.enviarPushASupervisores();
             this.router.navigate(['login']);
           }
           else {
             this.router.navigate(['home-cliente']);
           }
-          this.presentToast(
+          this.notificacionesS.presentToast(
             'Usuario registrado!',
             'success',
             'thumbs-up-outline'
           );
-
-        } 
+        }
       }
-   
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
+
+
   }
+
+
 
   async sacarFoto() {
     const image = await Camera.getPhoto({
@@ -148,7 +146,7 @@ export class CrearClientePage implements OnInit {
         this.foto = result.dataUrl;
       },
       (err) => {
-        this.presentToast(
+        this.notificacionesS.presentToast(
           'Error! Ocurrio un error al sacar la foto',
           'danger',
           'alert-circle-outline'
@@ -189,24 +187,15 @@ export class CrearClientePage implements OnInit {
           email: this.formularioAlta.getRawValue().email,
           repetirContrasena: this.formularioAlta.getRawValue().repetirContrasena
         });
-        this.presentToast('DNI escaneado', 'success', 'qr-code-outline');
+        this.notificacionesS.presentToast('DNI escaneado', 'success', 'qr-code-outline');
         this.scanActivo = false;
       })
       .catch((error) => {
-        this.presentToast(error, 'error', 'qr-code-outline');
+        this.notificacionesS.presentToast(error, 'error', 'qr-code-outline');
       });
   }
 
-  async presentToast(mensaje: string, color: string, icono: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 2000,
-      icon: icono,
-      color: color,
-    });
 
-    await toast.present();
-  }
 
   formatearCadena(cadena: string) {
     let rtn = '';
@@ -223,7 +212,7 @@ export class CrearClientePage implements OnInit {
     return rtn;
   }
 
- 
+
 
   pararScan() {
     this.scanActivo = false;

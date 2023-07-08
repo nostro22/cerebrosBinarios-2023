@@ -44,6 +44,7 @@ export class SeleccionPropinaComponent implements OnInit {
           this.pedidoRecibido.porcentajePropina = 0;
           break;
       }
+      // console.log(this.pedidoRecibido);
       this.PasamosPedidoConPropina.emit(this.pedidoRecibido);
       this.presentToast(
         `Propina cargada: $${this.pedidoRecibido.propina}`,

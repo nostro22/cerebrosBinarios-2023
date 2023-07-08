@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/servicios/auth.service';
 import { EmailService } from 'src/app/servicios/email.service';
 import { FirestoreService } from 'src/app/servicios/firestore.service';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 import { PushService } from 'src/app/servicios/push.service';
 
 @Component({
@@ -12,8 +12,12 @@ import { PushService } from 'src/app/servicios/push.service';
   styleUrls: ['./inicio-supervisor.page.scss'],
 })
 export class InicioSupervisorPage implements OnInit {
-  spinner: boolean = false;
   listadoClientes: any[] = [];
+  clientesAprobados: any[] = [];
+  clientesNoAprobados: any[] = [];
+  verTodos:boolean=true;
+  verHabilitados:boolean=false;
+  verDeshabilitado:boolean=false;
 
   verListaDeClientes: boolean = false;
 
@@ -21,7 +25,7 @@ export class InicioSupervisorPage implements OnInit {
     private router: Router,
     public authService: AuthService,
     private firestoreService: FirestoreService,
-    private toastController: ToastController,
+    private notificacionesS: NotificacionesService,
     private emailService: EmailService,
     private pushService: PushService
   ) {
@@ -29,87 +33,136 @@ export class InicioSupervisorPage implements OnInit {
   }
 
   ngOnInit() {
+    // this.firestoreService.traerClientes().subscribe((clientes: any) => {
+    //   this.listadoClientes = [];
+    //   clientes.forEach((c) => {
+    //     if (c.tipo == 'registrado') {
+    //       this.listadoClientes.push(c);
+    //     }
+    //   });
+    // });
+    console.log(this.authService.UsuarioReserva.value);
     this.firestoreService.traerClientes().subscribe((clientes: any) => {
-      this.listadoClientes = [];
+    this.listadoClientes = [];
+    this.clientesAprobados = [];
+    this.clientesNoAprobados = [];
+     
+      
       clientes.forEach((c) => {
-        if (c.tipo == 'registrado') {
+        if (c.tipo === 'registrado') {
           this.listadoClientes.push(c);
+    
+          if (c.aprobado) {
+            this.clientesAprobados.push(c);
+          } else {
+            this.clientesNoAprobados.push(c);
+          }
         }
       });
+    
+      // Utiliza los arrays clientesAprobados y clientesNoAprobados según sea necesario.
     });
   }
 
-  irAEncuestas() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
-      this.router.navigate(['encuesta-supervisor']);
-    }, 1000);
+  irA(ruta: string) {
+    this.notificacionesS.showSpinner();
+    try {
+      this.router.navigate([ruta]);
+
+    } catch (error) {
+
+    } finally {
+
+      this.notificacionesS.hideSpinner();
+    }
   }
 
-  irAAltas() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
-      this.router.navigate(['menu-altas']);
-    }, 1000);
-  }
 
   irAClientes() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
       this.verListaDeClientes = true;
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   irAHomeSupervisor() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
       this.verListaDeClientes = false;
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+
+      this.notificacionesS.hideSpinner();
+    }
   }
+
+  verSoloClientesHabilitados(){
+    this.verTodos=false;
+    this.verHabilitados=true;
+    this.verDeshabilitado=false;
+  }
+
+  verSoloClientesDeshabilitado(){
+    this.verTodos=false;
+    this.verHabilitados=false;
+    this.verDeshabilitado=true;
+  }
+
+  verTodosLosClientes(){
+    this.verTodos=true;
+    this.verHabilitados=false;
+    this.verDeshabilitado=false;
+  }
+
 
   habilitarDeshabilitarCliente(cliente: any) {
-    this.spinner = true;
-    cliente.aprobado = !cliente.aprobado;
-    this.firestoreService
-      .actualizarUsuario(cliente)
-      .then(() => {
-        this.spinner = false;
-        this.presentToast('Cliente actualizado', 'success', 'person-outline');
-        if (cliente.aprobado) {
-          this.emailService.enviarAvisoCuentaAprobada(cliente);
-        } else {
-          this.emailService.enviarAvisoCuentaDeshabilitada(cliente);
-        }
-      })
-      .catch(() => {
-        this.spinner = false;
-        this.presentToast(
-          'No se actualizo el cliente',
-          'danger',
-          'close-circle-outline'
-        );
-      });
+    this.notificacionesS.showSpinner();
+    try {
+      cliente.aprobado = !cliente.aprobado;
+      this.firestoreService
+        .actualizarUsuario(cliente)
+        .then(() => {
+          this.notificacionesS.hideSpinner();
+          this.notificacionesS.presentToast('Cliente actualizado', 'success', 'person-outline');
+          if (cliente.aprobado) {
+            this.emailService.enviarAvisoCuentaAprobada(cliente);
+          } else {
+            this.emailService.enviarAvisoCuentaDeshabilitada(cliente);
+          }
+        })
+    } catch (error) {
+      this.notificacionesS.hideSpinner();
+      this.notificacionesS.presentToast(
+        'No se actualizo el cliente',
+        'danger',
+        'close-circle-outline'
+      );
+
+    } finally {
+
+      this.notificacionesS.hideSpinner();
+    }
+
+
   }
 
-  async presentToast(mensaje: string, color: string, icono: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1500,
-      icon: icono,
-      color: color,
-    });
 
-    await toast.present();
-  }
+  cerrarSesion() {
+    this.notificacionesS.showSpinner();
+    try {
+      this.authService.LogOut();
+    } catch (error) {
 
-  cerrarSesion(){
-    this.spinner = true;
-    this.authService.LogOut().then(()=>{
-      this.spinner = false;
-    });
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
   }
 }

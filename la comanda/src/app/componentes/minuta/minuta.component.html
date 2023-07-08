@@ -1,18 +1,29 @@
-<div class="spinner">
-  <img src="../../assets/spinner.png " width="60%" [ngClass]="{'rotate-center' : this.spinner}" *ngIf="this.spinner" />
-</div>
-
 <div *ngIf="MostrarMenu">
   <div class="container  mt-3">
-    <button *ngIf="total ==0" [disabled]="true" class="btn btn-success">Ver Pedido</button>
-    <button *ngIf="total !=0" (click)="verPedido()" class="btn btn-success">Ver Pedido ({{total}})</button>
+    <div class="sticky-btn-container">
+      <button *ngIf="total ==0" [disabled]="true" style="width: 240px;" class="btn btn-success p-3">Ver Pedido</button>
+    </div>
+    <div class="sticky-btn-container2">
+      <button *ngIf="total !=0" (click)="verPedido()" style="font-size: 1.4rem;" class="btn btn-success">Ver Pedido ({{total}}$)</button>
+    </div>
+
+    <ion-fab horizontal="start" slot="fixed" style="transform: translateY(-55%);" *ngIf="!MostrarPedido">
+      <ion-fab-button color="warning" size="small" (click)="volverAlMenu()">
+        <ion-icon name="arrow-back-outline" ></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
   </div>
 
+  
+
+  
+
   <div style="overflow-y: scroll;">
+    
+    <div class="card_producto" style="margin-top: 2rem;"  *ngFor="let producto of listadoProductos">
 
-    <div class="card_producto" *ngFor="let producto of listadoProductos">
-
-      <div class="card-group  bg-dark bg-opacity-50 m-2 py-2 rounded-3">
+      <div class="card-group  bg-dark bg-opacity-50 m-2 py-2 rounded-3" >
         <div class="container justify-content-center d-flex flex-row gap-2">
 
           <div class="col-4">
@@ -39,7 +50,7 @@
             <p><b>Precio: {{producto.precio}}</b></p>
             <p><b>{{producto.descripcion}}</b></p>
           </div>
-
+          <p><b>Cantidad de {{ producto.nombre }} pedidas:</b> {{ producto.cantidad || 0 }}</p>
           <div class="d-flex justify-content-evenly">
             <button style="font-size: xx-large; width: 30vw; height: 15vw;" class="btn btn-danger"
               (click)="quitarDelPedido(producto)"><ion-icon name="remove-outline"></ion-icon></button>
@@ -58,6 +69,13 @@
 
 
 <div *ngIf="MostrarPedido">
+
+  <ion-fab horizontal="start"  slot="fixed" *ngIf="MostrarPedido" style="transform: translateY(-20%);">
+    <ion-fab-button color="warning" size="small" (click)="volverSeleccionPedido()">
+      <ion-icon name="arrow-back-outline" ></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <h1>Mi Pedido</h1>
   <div style="overflow-y: scroll;">
 
@@ -66,19 +84,25 @@
         <thead>
           <tr>
             <th>Producto</th>
-            <th>Precio</th>
+            <th>Precio unitario</th>
+            <!-- <th>Cantidad</th> -->
+            <!-- <th>Total por producto</th> -->
             <th>Total</th>
           </tr>
         </thead>
         <tbody>
           <tr style="color: black;" *ngFor="let producto of pedido">
-            <td style="color: black;">{{producto.nombre}}</td>
+            <td style="color: black;">{{producto.nombre}} (x{{producto.cantidad}})</td>
             <td style="color: black;">{{producto.precio}}</td>
-            <td style="color: black;">----------</td>
+            <!-- <td style="color: black;">{{producto.cantidad}}</td> -->
+            <td style="color: black;">{{producto.precio * producto.cantidad}}</td>
+            <!-- <td style="color: black;">----------</td> -->
           </tr>
           <tr>
             <td></td>
             <td></td>
+            <!-- <td></td> -->
+            <!-- <td></td> -->
             <td style="color: black;">{{total}}</td>
           </tr>
         </tbody>

@@ -19,11 +19,6 @@
     {{empleadoActivo.apellido}} {{empleadoActivo.nombre}}
   </ion-header>
 
-  <!-- VISTA DEL SPINNER -->
-  <div class="spinner">
-    <img src="../../assets/spinner.png " width="60%" [ngClass]="{'rotate-center' : this.spinner}"
-      *ngIf="this.spinner" />
-  </div>
 
   <ion-fab horizontal="end" vertical="bottom" slot="fixed" (click)="cerrarSesion()">
     <ion-fab-button color="warning">
@@ -228,16 +223,16 @@
     <ion-slides pager="true" scrollbar="true" *ngIf="clienteTieneAlgunaEncuesta">
       <ion-slide>
         <div style="margin-top: 3rem">
-          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" (click)="irASlideAdelante()"></ion-icon>
-          <h4 style="font-size: 1.5rem" *ngIf="!spinner">Humor</h4>
+          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline"></ion-icon>
+          <h4 style="font-size: 1.5rem" >Humor</h4>
           <canvas id="chartCliente1"></canvas>
         </div>
       </ion-slide>
       <ion-slide>
         <div style="margin-top: 3rem">
-          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" (click)="irASlideAdelante()"></ion-icon>
-          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline" (click)="irASlideAtras()"></ion-icon>
-          <h4 style="font-size: 1.5rem" *ngIf="!spinner">
+          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" ></ion-icon>
+          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline"></ion-icon>
+          <h4 style="font-size: 1.5rem" >
             Frecuencia de asistencia
           </h4>
           <canvas id="chartCliente2"></canvas>
@@ -245,9 +240,9 @@
       </ion-slide>
       <ion-slide>
         <div style="margin-top: 3rem">
-          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" (click)="irASlideAdelante()"></ion-icon>
-          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline" (click)="irASlideAtras()"></ion-icon>
-          <h4 style="font-size: 1.5rem" *ngIf="!spinner">
+          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline"></ion-icon>
+          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline"></ion-icon>
+          <h4 style="font-size: 1.5rem">
             ¿Usó la aplicación?
           </h4>
           <canvas id="chartCliente3"></canvas>
@@ -255,8 +250,8 @@
       </ion-slide>
       <ion-slide>
         <div style="margin-top: 3rem">
-          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline" (click)="irASlideAtras()"></ion-icon>
-          <h4 style="font-size: 1.5rem" *ngIf="!spinner">¿Pidió Delivery?</h4>
+          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline"></ion-icon>
+          <h4 style="font-size: 1.5rem">¿Pidió Delivery?</h4>
           <div style="height: 300px; width: 100%">
             <canvas id="chartCliente4"></canvas>
           </div>
@@ -406,16 +401,16 @@
     <ion-slides pager="true" scrollbar="true" *ngIf="empleadoTieneAlgunaEncuesta">
       <ion-slide>
         <div style="margin-top: 3rem">
-          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" (click)="irASlideAdelante()"></ion-icon>
-          <h4 style="font-size: 1.5rem" *ngIf="!spinner">Eficiencia</h4>
+          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" ></ion-icon>
+          <h4 style="font-size: 1.5rem" >Eficiencia</h4>
           <canvas id="chartEmpleado1"></canvas>
         </div>
       </ion-slide>
       <ion-slide>
         <div style="margin-top: 3rem">
-          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" (click)="irASlideAdelante()"></ion-icon>
-          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline" (click)="irASlideAtras()"></ion-icon>
-          <h4 style="font-size: 1.5rem" *ngIf="!spinner">
+          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" ></ion-icon>
+          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline"></ion-icon>
+          <h4 style="font-size: 1.5rem" >
             Frecuencia de inasistencia
           </h4>
           <canvas id="chartEmpleado2"></canvas>
@@ -423,16 +418,16 @@
       </ion-slide>
       <ion-slide>
         <div style="margin-top: 3rem">
-          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" (click)="irASlideAdelante()"></ion-icon>
-          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline" (click)="irASlideAtras()"></ion-icon>
-          <h4 style="font-size: 1.5rem" *ngIf="!spinner">Compañerismo</h4>
+          <ion-icon class="flecha-der heartbeat" name="caret-forward-outline" ></ion-icon>
+          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline"></ion-icon>
+          <h4 style="font-size: 1.5rem" >Compañerismo</h4>
           <canvas id="chartEmpleado3"></canvas>
         </div>
       </ion-slide>
       <ion-slide>
         <div style="margin-top: 3rem">
-          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline" (click)="irASlideAtras()"></ion-icon>
-          <h4 style="font-size: 1.5rem" *ngIf="!spinner">Limpieza</h4>
+          <ion-icon class="flecha-izq heartbeat" name="caret-back-outline"></ion-icon>
+          <h4 style="font-size: 1.5rem" >Limpieza</h4>
           <div style="height: 300px; width: 100%">
             <canvas id="chartEmpleado4"></canvas>
           </div>

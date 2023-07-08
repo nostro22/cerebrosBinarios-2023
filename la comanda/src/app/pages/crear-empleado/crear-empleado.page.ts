@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Camera, CameraResultType } from '@capacitor/camera';
 import { QrscannerService } from '../../servicios/qrscanner.service';
-import { ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/servicios/auth.service';
 import { Router } from '@angular/router';
-import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
+
 
 @Component({
   selector: 'app-register-empleado',
@@ -22,9 +22,9 @@ export class CrearEmpleadoPage implements OnInit {
   spinner: boolean = false;
 
 
-  constructor(private vibration: Vibration,private fb: FormBuilder,
+  constructor(private fb: FormBuilder,
      public scaner : QrscannerService,
-     private toastController: ToastController,
+     private notificacionesS: NotificacionesService,
      public authService:AuthService,
      private router: Router) 
   {
@@ -54,22 +54,22 @@ export class CrearEmpleadoPage implements OnInit {
   {
       if(this.forma.invalid)
       {
-        this.presentToast('Complete todos los campos correctamente','primary','alert-circle-outline')
-        this.vibration.vibrate(1000);
+        this.notificacionesS.presentToast('Complete todos los campos correctamente','primary','alert-circle-outline')
+        this.notificacionesS.vibrarError(1000);
 
       }
       else
       {
         if( this.forma.get('contrasena')!.value != this.forma.get('repetirContrasena')!.value)
         {
-          this.presentToast('Las contraseñas deben coincidir','primary','alert-circle-outline')
-          this.vibration.vibrate(1000);
+          this.notificacionesS.presentToast('Las contraseñas deben coincidir','primary','alert-circle-outline')
+          this.notificacionesS.vibrarError(1000);
 
         }
         else
         {
           this.spinner = true;
-          this.presentToast('Registrando!','success','thumbs-up-outline')
+          this.notificacionesS.presentToast('Registrando!','success','thumbs-up-outline')
           this.empleado = {
             email:this.forma.get('email')!.value,
             contrasena : this.forma.get('contrasena')!.value,
@@ -86,7 +86,7 @@ export class CrearEmpleadoPage implements OnInit {
           this.spinner = false;
           if(user)
           {
-            this.presentToast('El empleado fue registrado correctamente!','success','thumbs-up-outline')
+            this.notificacionesS.presentToast('El empleado fue registrado correctamente!','success','thumbs-up-outline')
             this.forma.reset();
             this.src_imagen= '../../../assets/anonimo.png';
           }
@@ -111,8 +111,8 @@ export class CrearEmpleadoPage implements OnInit {
           this.foto = result.dataUrl
         }, (err)=>
         {
-          this.presentToast('Error! Ocurrio un error al sacar la foto','danger','alert-circle-outline')
-          this.vibration.vibrate(1000);
+          this.notificacionesS.presentToast('Error! Ocurrio un error al sacar la foto','danger','alert-circle-outline')
+          this.notificacionesS.vibrarError(1000);
 
         })
   };
@@ -142,7 +142,7 @@ export class CrearEmpleadoPage implements OnInit {
         tipo: this.forma.getRawValue().tipo,
       });
 
-      this.presentToast('DNI escaneado', 'success', 'qr-code-outline');
+      this.notificacionesS.presentToast('DNI escaneado', 'success', 'qr-code-outline');
       this.scanActivo = false;
     }).catch((err)=>{console.log("Erorr: ", err.message)});
   }
@@ -160,17 +160,6 @@ export class CrearEmpleadoPage implements OnInit {
         cadena.split(' ')[1].slice(1).toLocaleLowerCase();
     }
     return rtn;
-  }
-
-  async presentToast(mensaje:string, color:string, icono:string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1500,
-      icon: icono,
-      color:color
-    });
-
-    await toast.present();
   }
 
   pararScan()

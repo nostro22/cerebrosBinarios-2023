@@ -173,15 +173,15 @@ button
   display: flex;
   align-items: center;
   flex-direction: column;
-  top: 3rem;
+  top: 25vh;
 }
 
 .qr_cliente{
   position: relative;
-  width: 20rem;
-  height: 20rem;
+  width: 15rem;
+  height: 15rem;
   background: url("../../../assets/qr-scanner.png");
-  background-size: 20rem;
+  background-size: 15rem;
 }
 .scan .qrcode {
   position: relative;

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import {  ToastController } from '@ionic/angular';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
+
 
 @Component({
   selector: 'app-juego15',
@@ -9,6 +10,7 @@ import {  ToastController } from '@ionic/angular';
 export class SimonQuinceComponent implements OnInit {
   @Input() pedidoRecibido?: any;
   @Output() PasamosPedidoConJuego: EventEmitter<any> = new EventEmitter<any>();
+  @Output() volverAtras?: EventEmitter<any> = new EventEmitter<any>();
 
   colors = ['red', 'blue', 'green', 'yellow'];
   gameStarted = false;
@@ -16,18 +18,22 @@ export class SimonQuinceComponent implements OnInit {
   messageClass = '';
   puntuacion: number = 0;
   victoria:boolean = false;
-  mostrarSpinner = false;
 
   sequence: string[] = [];
   playerSequence: string[] = [];
   sequenceIndex = 0;
 
-  constructor(private toastController: ToastController){
+  constructor(private notificacionesS: NotificacionesService){
 
   }
 
   ngOnInit(): void {
     
+  }
+
+  volverAlMenu(){
+    let scannerTrue = true;
+    this.volverAtras.emit(scannerTrue)
   }
 
   startGame() {
@@ -38,7 +44,7 @@ export class SimonQuinceComponent implements OnInit {
     this.playerSequence = [];
     this.sequenceIndex = 0;
     this.puntuacion = 0;
-    this.presentToast("¡MIRA LA SECUENCIA!", "success");
+    this.notificacionesS.presentToast("¡MIRA LA SECUENCIA!", "success");
     // this.message = '¡MIRA LA SECUENCIA!';
     this.messageClass = '';
 
@@ -66,7 +72,7 @@ export class SimonQuinceComponent implements OnInit {
 
     if (this.sequenceIndex === this.sequence.length) {
       setTimeout(() => {
-        this.presentToast("¡TU TURNO!", "secondary");
+        this.notificacionesS.presentToast("¡TU TURNO!", "secondary");
         // this.message = '¡TU TURNO!';
         // this.messageClass = '¡MUY BIEN!';
       }, 1000);
@@ -124,24 +130,23 @@ export class SimonQuinceComponent implements OnInit {
     this.playerSequence.push(color);
   
     if (color !== this.sequence[this.playerSequence.length - 1]) {
-      this.presentToast("¡SE ACABO EL JUEGO!", "danger");
+      this.notificacionesS.presentToast("¡SE ACABO EL JUEGO!", "danger");
       if(this.puntuacion >= 30)
       {
         this.victoria = true;
         this.message = '¡GANASTE!';
         this.messageClass = 'success';
-        this.presentToast("¡Ganaste. Descuento 15% aplicado!", "success");
+        this.notificacionesS.presentToast("¡Ganaste. Descuento 15% aplicado!", "success");
       }
       else
       {
         this.message = 'PERDISTE!';
         this.messageClass = 'error';
-        this.presentToast("Perdiste. Descuento 15% no aplicado!", "danger");
+        this.notificacionesS.presentToast("Perdiste. Descuento 15% no aplicado!", "danger");
       }
 
-      this.mostrarSpinner = true;
-      setTimeout(() => {
-        this.mostrarSpinner = false;
+      this.notificacionesS.showSpinner();
+      try {
         if (this.pedidoRecibido.jugo == false) {
             this.pedidoRecibido.jugo = true;
             if (this.victoria) {
@@ -151,16 +156,23 @@ export class SimonQuinceComponent implements OnInit {
             }
           }
           this.PasamosPedidoConJuego.emit(this.pedidoRecibido);
-      }, 2000);
+     
+      } catch (error) {
+        
+      }finally{
+        this.notificacionesS.hideSpinner();
+      }
+     
+       
+ 
       
       this.gameStarted = false;
     } else if (this.playerSequence.length === this.sequence.length) {
       if (this.playerSequence.join('') === this.sequence.join('')) {
-        this.presentToast("¡MUY BIEN!", "success");
+        this.notificacionesS.presentToast("¡MUY BIEN!", "success");
         this.puntuacion += 10;
         // this.messageClass = 'success';
         this.playerSequence = [];
-  
         setTimeout(() => {
           this.generateNextSequence();
           setTimeout(() => {
@@ -171,16 +183,6 @@ export class SimonQuinceComponent implements OnInit {
         this.gameStarted = false;
       }
     }
-  }
-
-  async presentToast(mensaje:string, color:string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1500,
-      color:color
-    });
-
-    await toast.present();
   }
 
 }

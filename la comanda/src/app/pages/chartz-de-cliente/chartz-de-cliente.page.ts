@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/servicios/auth.service';
 import { Router } from '@angular/router';
 import { EncuestasService } from 'src/app/servicios/encuestas.service';
@@ -17,12 +16,15 @@ import {
   registerables,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
+import { IonSlides } from '@ionic/angular';
 @Component({
   selector: 'app-charts-encuesta-clientes',
   templateUrl: './chartz-de-cliente.page.html',
   styleUrls: ['./chartz-de-cliente.page.scss'],
 })
 export class ChartzDeClientePage implements OnInit {
+  @ViewChild(IonSlides) slides: IonSlides;
   chart: any;
   public chartActivo = 1;
   listadoEncuestasClientes: any[] = [];
@@ -31,7 +33,6 @@ export class ChartzDeClientePage implements OnInit {
 
   mostrarGraficos: boolean = false;
   constructor(
-    private toastController: ToastController,
     public authService: AuthService,
     private router: Router,
     private encuestas: EncuestasService) {
@@ -172,6 +173,8 @@ export class ChartzDeClientePage implements OnInit {
               callbacks: {
                 //@ts-ignore
                 labelPointStyle: (context) => {
+                  // console.log(context);
+                  // context.formattedValue = '';
                   const total = encuestas.length;
                   if (context.dataIndex == 0) {
                     const totalMalo = listaSatisfaccion[0];
@@ -317,6 +320,8 @@ export class ChartzDeClientePage implements OnInit {
               callbacks: {
                 //@ts-ignore
                 labelPointStyle: (context) => {
+                  // console.log(context);
+                  // context.formattedValue = '';
                   const total = encuestas.length;
                   if (context.dataIndex == 0) {
                     const totalAdecuada = listaVariedadMenu[0];
@@ -492,6 +497,8 @@ export class ChartzDeClientePage implements OnInit {
               callbacks: {
                 //@ts-ignore
                 labelPointStyle: (context) => {
+                  // console.log(context);
+                  // context.formattedValue = '';
                   const total = encuestas.length;
                   if (context.dataIndex == 0) {
                     const totalSi = listaPrecioAdecuado[0];
@@ -623,6 +630,8 @@ export class ChartzDeClientePage implements OnInit {
               callbacks: {
                 //@ts-ignore
                 labelPointStyle: (context) => {
+                  // console.log(context);
+                  // context.formattedValue = '';
                   const total = encuestas.length;
                   if (context.dataIndex == 0) {
                     const totalSi = listaRecomendaciones[0];

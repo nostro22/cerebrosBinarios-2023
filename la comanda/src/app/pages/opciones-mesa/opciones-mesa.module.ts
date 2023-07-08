@@ -10,7 +10,7 @@ import { AbonarComponent } from 'src/app/componentes/abonar/abonar.component';
 import { SeleccionPropinaComponent } from 'src/app/componentes/seleccion-propina/seleccion-propina.component';
 import { PreguntadosDiezComponent } from 'src/app/juegos/preguntadosDiez/preguntadosDiez.component';
 import { SimonQuinceComponent } from 'src/app/juegos/simonQuince/simonQuince.component';
-import { LoadingComponent } from 'src/app/componentes/loading/loading.component';
+import { VerMinutaComponent } from 'src/app/componentes/ver-minuta/ver-minuta.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -18,6 +18,6 @@ import { LoadingComponent } from 'src/app/componentes/loading/loading.component'
     IonicModule,
     OpcionesMesaPageRoutingModule
   ],
-  declarations: [OpcionesMesaPage, MinutasComponent, DiferenciaMinutosPipe, AbonarComponent, SeleccionPropinaComponent, PreguntadosDiezComponent, SimonQuinceComponent,LoadingComponent]
+  declarations: [OpcionesMesaPage, MinutasComponent, DiferenciaMinutosPipe, AbonarComponent, SeleccionPropinaComponent, PreguntadosDiezComponent, SimonQuinceComponent, VerMinutaComponent]
 })
 export class OpcionesMesaPageModule { }

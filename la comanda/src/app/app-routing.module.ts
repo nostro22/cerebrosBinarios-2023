@@ -109,8 +109,20 @@ const routes: Routes = [
     loadChildren: () => import('./pages/inicio-cocinero/inicio-cocinero.module').then(m => m.InicioCocineroPageModule)
   },
   {
+    path: 'home-bartender',
+    loadChildren: () => import('./pages/inicio-bartender/inicio-bartender.module').then(m => m.InicioBartenderPageModule)
+  },
+  {
     path: 'chat-consulta',
     loadChildren: () => import('./pages/consultas/consultas.module').then(m => m.ConsultasPageModule)
+  },
+  {
+    path: 'crear-cliente',
+    loadChildren: () => import('./pages/crear-cliente/crear-cliente.module').then( m => m.CrearClientePageModule)
+  },
+  {
+    path: 'inicio-bartender',
+    loadChildren: () => import('./pages/inicio-bartender/inicio-bartender.module').then( m => m.InicioBartenderPageModule)
   },
 ];
 

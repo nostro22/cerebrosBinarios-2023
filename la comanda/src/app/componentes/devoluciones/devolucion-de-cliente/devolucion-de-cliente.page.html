@@ -1,16 +1,19 @@
 <body>
   <ion-content>
     <ion-header style="margin: 0px;"><ion-title style="margin: 0px; font-weight: 600;"  style="color: black;" size="large">ENCUESTA CLIENTE</ion-title></ion-header>
-    <div class="spinner" *ngIf="this.spinner">
-      <img src="../../assets/spinner.png " width="60%" [ngClass]="{'rotate-center' : this.spinner}"
-         />
-    </div>
+
+    <ion-fab horizontal="start" slot="fixed" style="transform: translateY(55%);">
+      <ion-fab-button color="warning" size="small" (click)="atras()">
+        <ion-icon name="arrow-back-outline" ></ion-icon>
+      </ion-fab-button>
+
+    </ion-fab>
     <div *ngIf="!this.realizoEncuesta">
 
       <form [formGroup]="forma" (ngSubmit)="agregarRespuesta()" style="margin-top: 0px;">
 
         <div>
-          <h4 class="mb-1" style="margin-top: 10px;">¿Crees que el precio del producto es adecuado a lo que recibiste?</h4>
+          <h4 class="mb-1" style="margin-top: 4rem;">¿Crees que el precio del producto es adecuado a lo que recibiste?</h4>
 
           <select class="form-select-input select" placeholder="Precio adecuado" formControlName="precioAdecuado">
             <option value="">Elija...</option>
@@ -76,17 +79,7 @@
         <hr style="margin:0px">
         <input style="margin-top: 5px; margin-bottom: 5px;" type="text" class="input" placeholder="Agrega un comentario" formControlName="comentario">
         <hr style="margin-top:0px">
-        <ion-button style="margin: 0px;" (click)="sacarFoto()"><ion-icon style="padding-right: 10px;" name="cloud-upload-outline"></ion-icon>Subir
-          imagen</ion-button>
-
-        <div class="image-item">
-          <p>Imágenes subidas {{numeroImagen }} de 3 </p>
-        </div>
-        <ion-row class="uploaded-images">
-          <ion-avatar *ngFor="let item of this.fotos; let index=index">
-            <img width="90px" height="90px" class="img-prod" [src]="item">
-          </ion-avatar>
-        </ion-row>
+       
         <ion-button type="submit">
           Enviar
         </ion-button>

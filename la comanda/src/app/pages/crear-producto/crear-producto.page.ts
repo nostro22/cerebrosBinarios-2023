@@ -6,14 +6,10 @@ import {
 } from '@angular/forms';
 import { AuthService } from 'src/app/servicios/auth.service';
 import { Camera, CameraResultType } from '@capacitor/camera';
-import { ToastController } from '@ionic/angular';
 import { Producto } from 'src/app/clases/producto';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
-
-
-
 import { Router } from '@angular/router';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 
 @Component({
   selector: 'app-alta-productos',
@@ -27,15 +23,14 @@ export class CrearProductoPage implements OnInit {
   numeroImagen: number = 0;
   fotos_urls: any[] = [];
   fotos: any[] = [];
-  spinner: boolean = false;
 
-  constructor(public formBuilder: FormBuilder, private toastController: ToastController, private firestore: AngularFirestore, private authService: AuthService,private router:Router,private vibration: Vibration) {
+  constructor(public formBuilder: FormBuilder, private notificacionesS: NotificacionesService, private firestore: AngularFirestore, private authService: AuthService, private router: Router) {
     this.producto = new Producto();
     this.formularioAlta = this.formBuilder.group({
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required],
       tiempoElaboracion: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      precio:  ['', [Validators.required, Validators.pattern("^[0-9]*$")]]
+      precio: ['', [Validators.required, Validators.pattern("^[0-9]*$")]]
     });
   }
 
@@ -57,43 +52,44 @@ export class CrearProductoPage implements OnInit {
 
   async registrar() {
     if (!(this.fotos.length === 3)) {
-      this.presentToast(
+      this.notificacionesS.presentToast(
         'Error! Debe agregar las tres fotos',
         'danger',
         'alert-circle-outline'
       );
-      this.vibration.vibrate(1000);
-    }
-    else {
-      this.presentToast('Registrando!', 'success', 'thumbs-up-outline')
-      this.spinner = true;
-      for (let index = 0; index < this.fotos.length; index++) {
-        var foto_url = await this.authService.subirArchivosString(this.fotos[index]);
-        this.fotos_urls.push(foto_url);
+      this.notificacionesS.vibrarError(1000);
+    } else {
+      this.notificacionesS.presentToast('Registrando!', 'success', 'thumbs-up-outline');
+      this.notificacionesS.showSpinner();
+      try {
+        for (let index = 0; index < this.fotos.length; index++) {
+          var foto_url = await this.authService.subirArchivosString(this.fotos[index]);
+          this.fotos_urls.push(foto_url);
+        }
+        if (this.fotos_urls.length === 3) {
+          await this.firestore.collection('productos').doc().set({
+            nombre: this.formularioAlta.get('nombre')!.value,
+            descripcion: this.formularioAlta.get('descripcion')!.value,
+            tiempoElaboracion: this.formularioAlta.get('tiempoElaboracion')!.value,
+            precio: this.formularioAlta.get('precio')!.value,
+            fotos: this.fotos_urls,
+            tipo: this.authService.UsuarioActivo.value.tipo,
+          }).then(() => {
+            this.numeroImagen = 0;
+            this.notificacionesS.presentToast('Producto Registrado!', 'success', 'thumbs-up-outline');
+            this.volverAtras();
+          });
+        } else {
+          this.notificacionesS.presentToast('Error! La cantidad de fotos es incorrecta', 'danger', 'alert-circle-outline');
+          this.notificacionesS.vibrarError(1000);
+        }
+      } catch (error) {
+        this.notificacionesS.presentToast('Error! Ocurrió un error al registrar', 'danger', 'alert-circle-outline');
+        this.notificacionesS.vibrarError(1000);
+      } finally {
+        this.notificacionesS.hideSpinner();
       }
-      this.spinner = false;
-      if (this.fotos_urls.length === 3) {
-        this.spinner = true;
-        await this.firestore.collection('productos').doc().set({
-          nombre: this.formularioAlta.get('nombre')!.value,
-          descripcion: this.formularioAlta.get('descripcion')!.value,
-          tiempoElaboracion: this.formularioAlta.get('tiempoElaboracion')!.value,
-          precio: this.formularioAlta.get('precio')!.value,
-          fotos: this.fotos_urls
-        }).then(() => {
-          this.numeroImagen = 0;
-          this.presentToast('Producto Registrado!', 'success', 'thumbs-up-outline')
-          this.router.navigate(['home-cocinero'])
-          this.spinner = false;
-        }).catch((err) => {
-          this.presentToast('Error! Ocurrio un error al registrar', 'danger', 'alert-circle-outline')
-          this.vibration.vibrate(1000);
-
-        })
-      }
-
     }
-
   }
 
   async sacarFoto() {
@@ -111,22 +107,19 @@ export class CrearProductoPage implements OnInit {
         console.log(this.numeroImagen);
       }
     }, (err) => {
-      this.presentToast('Error! Ocurrio un error al sacar la foto', 'danger', 'alert-circle-outline')
-      this.vibration.vibrate(1000);
+      this.notificacionesS.presentToast('Error! Ocurrio un error al sacar la foto', 'danger', 'alert-circle-outline')
+      this.notificacionesS.vibrarError(1000);
     })
   };
-  async presentToast(mensaje: string, color: string, icono: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 2000,
-      icon: icono,
-      color: color,
-    });
 
-    await toast.present();
+
+  volverAtras(){
+    if(this.authService.UsuarioActivo.value.tipo=="cocinero"){
+      this.router.navigate(['home-cocinero']);
+    }else if(this.authService.UsuarioActivo.value.tipo=="bartender"){
+      this.router.navigate(['home-bartender']);
+    }
   }
- 
-
 
 
 }

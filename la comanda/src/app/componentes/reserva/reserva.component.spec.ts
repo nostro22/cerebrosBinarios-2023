@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { LoadingComponent } from './loading.component';
+import { ReservaComponent } from './reserva.component';
 
-describe('LoadingComponent', () => {
-  let component: LoadingComponent;
-  let fixture: ComponentFixture<LoadingComponent>;
+describe('ReservaComponent', () => {
+  let component: ReservaComponent;
+  let fixture: ComponentFixture<ReservaComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoadingComponent ],
+      declarations: [ ReservaComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LoadingComponent);
+    fixture = TestBed.createComponent(ReservaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

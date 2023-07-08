@@ -1,11 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonSlides, ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/servicios/auth.service';
 import { Router } from '@angular/router';
 import { Camera, CameraResultType } from '@capacitor/camera';
 import { EncuestasService } from 'src/app/servicios/encuestas.service';
-import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
 
 import {
   Chart,
@@ -21,6 +19,7 @@ import {
   registerables,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 
 @Component({
   selector: 'app-encuesta-cliente',
@@ -28,17 +27,12 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
   styleUrls: ['./devolucion-de-cliente.page.scss'],
 })
 export class DevolucionDeClientePage implements OnInit {
+  // @Output() respuestaEncuesta?: EventEmitter<any> = new EventEmitter<any>();
 
 
-
-  @ViewChild(IonSlides) slides: IonSlides;
   foto: any;
   public forma!: FormGroup;
-  numeroImagen: number = 0;
   respuesta: any = {}
-  fotos_urls: any[] = [];
-  fotos: any[] = [];
-  spinner: boolean = false;
   realizoEncuesta: boolean = false;
   mostrarGraficos: boolean = false;
   chart: Chart;
@@ -46,10 +40,10 @@ export class DevolucionDeClientePage implements OnInit {
   clienteActivo: any = null;
 
   constructor(private fb: FormBuilder,
-    private toastController: ToastController,
+    private notificacionesS: NotificacionesService,
     public authService: AuthService,
     private router: Router,
-    private encuestas: EncuestasService,   private vibration: Vibration) {
+    private encuestas: EncuestasService) {
     this.forma = this.fb.group({
       'satisfaccion': ['5', [Validators.required]],
       'comentario': [''],
@@ -78,37 +72,52 @@ export class DevolucionDeClientePage implements OnInit {
   respondio: boolean = false;
 
   ngOnInit() {
-    
+
+  }
+
+  // respuestaDeLaEncuesta() {
+  //   let respondio = true;
+  //   this.respuestaEncuesta.emit(respondio)
+  // }
+
+    atras()
+  {
+    if(this.authService.UsuarioActivo.value.perfil == "cliente")
+    {
+      this.router.navigate(['menu-mesa'])
+    }
   }
 
   async agregarRespuesta() {
-    console.log(this.respuesta);
-    if (this.fotos.length > 0) {
-      this.spinner = true;
-      for (let index = 0; index < this.fotos.length; index++) {
-        var foto_url = await this.authService.subirArchivosString(this.fotos[index]);
-        this.fotos_urls.push(foto_url);
+
+    this.notificacionesS.showSpinner();
+    try {
+      this.respuesta =
+      {
+        satisfaccion: this.forma.get('satisfaccion')!.value,
+        comentario: this.forma.get('comentario')!.value,
+        precioAdecuado: this.forma.get('precioAdecuado')!.value,
+        variedadMenu: this.forma.get('variedadMenu')!.value,
+        recomendarias: this.forma.get('recomendarias')!.value,
+        cliente: this.authService.UsuarioActivo.value,
+        // foto: this.fotos_urls
+
       }
-      this.spinner = false;
-    }
-    this.respuesta =
-    {
-      satisfaccion: this.forma.get('satisfaccion')!.value,
-      comentario: this.forma.get('comentario')!.value,
-      precioAdecuado: this.forma.get('precioAdecuado')!.value,
-      variedadMenu: this.forma.get('variedadMenu')!.value,
-      recomendarias: this.forma.get('recomendarias')!.value,
-      cliente: this.authService.UsuarioActivo,
-      foto: this.fotos_urls
+      let clienteActualizado = this.authService.UsuarioActivo.value;
+      clienteActualizado.hizoEncuesta = true;
+      this.authService.UsuarioActivo.next(clienteActualizado);
 
-    }
+      console.log(this.respuesta);
+      if (await this.encuestas.agregarRespuestaClientes(this.respuesta)) {
+        this.realizoEncuesta = true;
+        this.notificacionesS.presentToast('La respuesta fue registrada correctamente!', 'success', 'thumbs-up-outline');
+        this.router.navigateByUrl('menu-mesa');
+        //this.encuestas.respondio = true;
+      }
+    } catch (error) {
 
-    console.log(this.respuesta);
-    if (await this.encuestas.agregarRespuestaClientes(this.respuesta)) {
-      this.realizoEncuesta = true;
-      this.presentToast('La respuesta fue registrada correctamente!', 'success', 'thumbs-up-outline');
-      this.router.navigateByUrl('home-cliente');
-      //this.encuestas.respondio = true;
+    } finally {
+      this.notificacionesS.hideSpinner();
     }
   }
 
@@ -125,37 +134,9 @@ export class DevolucionDeClientePage implements OnInit {
     }
   }
 
-  async sacarFoto() {
-    const image = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: false,
-      promptLabelPhoto: 'Elegir de la galeria',
-      promptLabelPicture: 'Sacar foto',
-      promptLabelHeader: 'Foto',
-      resultType: CameraResultType.DataUrl
-    }).then((result) => {
-      if (this.numeroImagen < 3) {
-        this.numeroImagen++;
-        this.fotos.push(result.dataUrl);
-        console.log(this.numeroImagen);
-      }
-    }, (err) => {
-      this.presentToast('Error! Ocurrio un error al sacar la foto', 'danger', 'alert-circle-outline')
-      this.vibration.vibrate(1000);
-    })
-  };
 
-  async presentToast(mensaje: string, color: string, icono: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1500,
-      icon: icono,
-      color: color
-    });
 
-    await toast.present();
-  }
-  navegarMenuMesa() { 
+  navegarMenuMesa() {
     this.router.navigateByUrl('menu-mesa');
   }
 }

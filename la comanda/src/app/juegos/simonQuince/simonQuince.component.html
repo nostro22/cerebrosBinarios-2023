@@ -1,6 +1,10 @@
-<app-loading *ngIf="mostrarSpinner"></app-loading>
 <ion-content>
   <div class="simon-dice">
+    <ion-fab horizontal="start" slot="fixed" style="transform: translateY(68%);">
+      <ion-fab-button color="warning" size="small" (click)="volverAlMenu()">
+        <ion-icon name="arrow-back-outline" ></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
     <div class="contenedor-botones">
       <h1 class="titulo-simondice">SIMON QUINCE</h1>
       <p class="puntuacion">

@@ -10,10 +10,10 @@
   display: flex;
 }
 
-.slides_img {
-  width: 100%;
-  height: 50%;
-}
+// .slides_img {
+//   width: 100%;
+//   height: 50%;
+// }
 
 .img-producto {
   width: 100%;
@@ -40,12 +40,12 @@
 .boton_pedido {
   margin-left: auto;
   margin-right: auto;
-  margin-top: 25px;
-  margin-bottom: 3%;
-  padding: 5%;
+  margin-top: 15px;
+  margin-bottom: 1%;
+  padding: 1.8%;
   display: block;
   width: 80%;
-  height: 50%;
+  height: 30%;
 }
 
 .boton-agregar {
@@ -60,13 +60,15 @@
 
 .div_ver_pedido {
   position: absolute;
-  bottom: 0%;
+  // bottom: 0%;
   width: 100%;
+  // right: 100%;
+  min-height: 95vh;
   background-color: #ffc5bb;
   text-align: center;
-  left: 0%;
-  right: 0%;
-  padding-top: 2%;
+  // left: 0%;
+  // right: 0%;
+  // padding-top: 2%;
 }
 
 .scanner-activo {

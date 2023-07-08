@@ -8,23 +8,38 @@ export class QrscannerService {
   constructor() { }
 
   async startScan() {
-    document.querySelector('body').classList.add('scanner-active');
-    await BarcodeScanner.checkPermission({force:true});
-    BarcodeScanner.hideBackground();
-    const result = await BarcodeScanner.startScan();
-    if(result.hasContent) {
-      document.querySelector('body').classList.remove('scanner-active');
-      return result.content;
+    try {
+      document.querySelector('body').classList.add('scanner-active');
+      await BarcodeScanner.checkPermission({force:true});
+      BarcodeScanner.hideBackground();
+      const result = await BarcodeScanner.startScan();
+      if(result.hasContent) {
+        document.querySelector('body').classList.remove('scanner-active');
+        return result.content;
+      }
+      
+    } catch (error) {
+      
     }
   } 
 
   stopScanner() {
-    document.querySelector('body').classList.remove('scanner-active');
-    BarcodeScanner.showBackground();
-    BarcodeScanner.stopScan();
+    try {
+      document.querySelector('body').classList.remove('scanner-active');
+      BarcodeScanner.showBackground();
+      BarcodeScanner.stopScan();
+      
+    } catch (error) {
+      
+    }
   } 
 
   scanPrepare() {
-    BarcodeScanner.prepare();
+    try {
+      BarcodeScanner.prepare();
+      
+    } catch (error) {
+      
+    }
   } 
 }

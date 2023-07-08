@@ -6,7 +6,7 @@ import {
   AngularFirestore,
 } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
+import { NotificacionesService } from './notificaciones.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class EncuestasService {
   constructor(public afAuth: AngularFireAuth,
     public afs: AngularFirestore,
     private router: Router,
-    private toastController: ToastController, private auth : AuthService) { this.traerRespuestasEmpleados() }
+    private notificacionesS: NotificacionesService, private auth : AuthService) { this.traerRespuestasEmpleados() }
 
   respondio=false
 
@@ -33,7 +33,7 @@ export class EncuestasService {
 
       } catch (error) {
         console.log('Error al agregar respuesta', error);
-        this.auth.presentToast(
+        this.notificacionesS.presentToast(
           'Error! Hubo un error',
           'danger',
           'alert-circle-outline'
@@ -50,7 +50,7 @@ export class EncuestasService {
 
       } catch (error) {
         console.log('Error al agregar respuesta', error);
-        this.auth.presentToast(
+        this.notificacionesS.presentToast(
           'Error! Hubo un error',
           'danger',
           'alert-circle-outline'

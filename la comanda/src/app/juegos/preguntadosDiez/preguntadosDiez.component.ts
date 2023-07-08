@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AuthService } from 'src/app/servicios/auth.service';
 import { HttpClient } from '@angular/common/http';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 
 @Component({
   selector: 'app-juego10',
@@ -10,8 +11,8 @@ import { HttpClient } from '@angular/common/http';
 export class PreguntadosDiezComponent implements OnInit {
   @Input() pedidoRecibido?: any;
   @Output() PasamosPedidoConJuego: EventEmitter<any> = new EventEmitter<any>();
+  @Output() volverAtras?: EventEmitter<any> = new EventEmitter<any>();
 
-  spinner: boolean = false;
   user: any = this.authService.UsuarioActivo;
   listOfCountries: any = [];
   listOfQuestions: any = [];
@@ -27,13 +28,13 @@ export class PreguntadosDiezComponent implements OnInit {
   correctAnswer: boolean = false;
   wrongAnswer: boolean = false;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService, private notificacionesS: NotificacionesService) { }
 
   async ngOnInit() {
-    this.spinner = true;
+    this.notificacionesS.showSpinner();
     await this.getPaises()
       .then((paises) => {
-        this.spinner = false;
+        this.notificacionesS.hideSpinner();
         this.listOfCountries = paises.map((country: any) => {
           return {
             name: country.translations.spa.official,
@@ -43,7 +44,7 @@ export class PreguntadosDiezComponent implements OnInit {
         this.startGame();
       })
       .catch((error) => {
-        this.spinner = false;
+        this.notificacionesS.hideSpinner();
       });
   }
 
@@ -61,7 +62,7 @@ export class PreguntadosDiezComponent implements OnInit {
     this.generateQuestions();
     this.currentQuestion = this.listOfQuestions[this.currentIndex];
     this.activeGame = true;
-  } 
+  }
   generateQuestions() {
     this.listOfCountries.sort(() => Math.random() - 0.5);
     this.listOfQuestions = this.listOfCountries
@@ -80,11 +81,16 @@ export class PreguntadosDiezComponent implements OnInit {
         };
       });
     this.loadedQuestions = true;
-  } 
+  }
 
   generateRandomNumber() {
     return Math.floor(Math.random() * 249);
-  } 
+  }
+
+  volverAlMenu(){
+    let scannerTrue = true;
+    this.volverAtras.emit(scannerTrue)
+  }
 
   play(option: string, event: Event) {
     if (this.activeGame) {
@@ -96,7 +102,7 @@ export class PreguntadosDiezComponent implements OnInit {
         setTimeout(() => {
           this.correctAnswer = false;
         }, 300);
-      
+
       } else {
         this.wrongAnswer = true;
         setTimeout(() => {
@@ -118,27 +124,41 @@ export class PreguntadosDiezComponent implements OnInit {
           this.gameOver = true;
           if (this.score >= 4) {
             this.victory = true;
-            this.gameOverText = '¡GANASTE!';
-         
+            this.gameOverText = '¡GANASTE UN DESCUENTO DEL 10%!';
+            this.notificacionesS.presentToast('Ganaste, se le aplicara un descuento del 10%!', 'success', 'thumbs-up-outline');
+          }
+          else{
+            this.notificacionesS.presentToast('Perdiste! :(', 'danger');
           }
 
-          this.spinner = true;
-          setTimeout(() => {
-            this.spinner = false;
+          this.notificacionesS.showSpinner();
+          try {
             if (this.pedidoRecibido.jugo == false) {
               this.pedidoRecibido.jugo = true;
               if (this.victory) {
                 this.pedidoRecibido.descuentoJuego = 10;
+                console.log("entre gane");
+
               } else {
                 this.pedidoRecibido.descuentoJuego = 0;
+                console.log("entre perdi");
+
               }
             }
-            this.PasamosPedidoConJuego.emit(this.pedidoRecibido);
-          }, 1500);
+            setTimeout(() => {
+              this.PasamosPedidoConJuego.emit(this.pedidoRecibido);
+            }, 1500);
+
+          } catch (error) {
+
+          } finally {
+            this.notificacionesS.hideSpinner();
+          }
+
         }
       }
     }
-  } 
+  }
 
   restartGame() {
     this.generateQuestions();
@@ -150,6 +170,6 @@ export class PreguntadosDiezComponent implements OnInit {
     this.gameOver = false;
     this.gameOverText = '¡PERDISTE!';
     this.currentQuestion = this.listOfQuestions[this.currentIndex];
-    
-  } 
+
+  }
 }

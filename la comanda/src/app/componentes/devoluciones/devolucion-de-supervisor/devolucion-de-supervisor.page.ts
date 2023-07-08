@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
 import { FirestoreService } from 'src/app/servicios/firestore.service';
 import {
   Chart,
@@ -17,9 +16,8 @@ import {
   registerables,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-
 import { AuthService } from 'src/app/servicios/auth.service';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 
 @Component({
   selector: 'app-encuesta-supervisor',
@@ -38,12 +36,10 @@ export class DevolucionDeSupervisorPage implements OnInit {
   listadoEncuestasClientes: any[] = [];
   listadoEncuestasEmpleados: any[] = [];
 
-  spinner: boolean = false;
-
   public forma!: FormGroup;
   public formaEmpleado!: FormGroup;
 
-  chart: Chart;
+  chart: Chart | any;
   vistasChartsCliente: boolean = false;
   vistasChartsEmpleado: boolean = false;
   clienteTieneAlgunaEncuesta: boolean = false;
@@ -53,7 +49,7 @@ export class DevolucionDeSupervisorPage implements OnInit {
     private fb: FormBuilder,
     private firestoreService: FirestoreService,
     private router: Router,
-    private toastController: ToastController,
+    private notificacionesS: NotificacionesService,
     public authService: AuthService
   ) {
     this.forma = this.fb.group({
@@ -116,25 +112,32 @@ export class DevolucionDeSupervisorPage implements OnInit {
   }
 
   irAEncuestaCliente() {
-    this.spinner = true;
-    setTimeout(() => {
+    this.notificacionesS.showSpinner();
+    try {
+      this.encuestaEmpleado = false;
       this.encuestaCliente = true;
-      this.spinner = false;
-    }, 1000);
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   irAEncuestaEmpleado() {
-    this.spinner = true;
-    setTimeout(() => {
+    this.notificacionesS.showSpinner();
+    try {
+      this.encuestaCliente = false;
       this.encuestaEmpleado = true;
-      this.spinner = false;
-    }, 1000);
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   irAMenuEncuestas() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
       this.clienteTieneAlgunaEncuesta = false;
       this.empleadoTieneAlgunaEncuesta = false;
       this.encuestaCliente = false;
@@ -143,30 +146,44 @@ export class DevolucionDeSupervisorPage implements OnInit {
       this.vistasChartsEmpleado = false;
       this.clienteActivo = null;
       this.empleadoActivo = null;
-    }, 1000);
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   irAListadoClientes() {
-    this.spinner = true;
-    setTimeout(() => {
+    this.notificacionesS.showSpinner();
+    try {
       this.clienteActivo = null;
       this.vistasChartsCliente = false;
       this.clienteTieneAlgunaEncuesta = false;
-      this.spinner = false;
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
+
   }
 
   irAListadoEmpleados() {
-    this.spinner = true;
-    setTimeout(() => {
+    this.notificacionesS.showSpinner();
+    try {
       this.empleadoActivo = null;
       this.vistasChartsEmpleado = false;
       this.empleadoTieneAlgunaEncuesta = false;
-      this.spinner = false;
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   seleccionarDeliverySi() {
+
     const deliverySi = <HTMLInputElement>document.getElementById('deliverySi');
     const deliveryNo = <HTMLInputElement>document.getElementById('deliveryNo');
     if (deliverySi.checked && deliveryNo.checked) {
@@ -193,12 +210,15 @@ export class DevolucionDeSupervisorPage implements OnInit {
   }
 
   mostrarEncuestaCliente(cliente: any) {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
       this.clienteActivo = cliente;
-    }, 1000);
-    console.log(cliente);
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   crearEncuestaCliente() {
@@ -222,24 +242,24 @@ export class DevolucionDeSupervisorPage implements OnInit {
       this.respuestaEncuestaCliente.detalle = this.forma.get('detalle')!.value;
       this.respuestaEncuestaCliente.cliente = this.clienteActivo;
 
-      this.spinner = true;
+      this.notificacionesS.showSpinner();
       this.firestoreService
         .crearEncuestaSobreClientes(this.respuestaEncuestaCliente)
         .then(() => {
-          this.presentToast(
+          this.notificacionesS.presentToast(
             'La encuesta fue registrada',
             'success',
             'checkmark-outline'
           );
-          this.spinner = false;
+          this.notificacionesS.hideSpinner();
           this.respuestaEncuestaCliente = {};
           this.clienteActivo = null;
         })
         .catch(() => {
-          this.spinner = false;
+          this.notificacionesS.hideSpinner();
         });
     } else {
-      this.presentToast(
+      this.notificacionesS.presentToast(
         'Debes completar todos los campos',
         'warning',
         'alert-circle-outline'
@@ -248,79 +268,82 @@ export class DevolucionDeSupervisorPage implements OnInit {
   }
 
   mostrarEncuestaEmpleado(empleado: any) {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
       this.empleadoActivo = empleado;
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
     console.log(empleado);
   }
 
   crearEncuestaEmpleado() {
-    if (this.formaEmpleado.valid) {
-      const deliverySi = <HTMLInputElement>(
-        document.getElementById('deliverySi')
-      );
-      this.respuestaEncuestaEmpleado.eficiencia =
-        this.formaEmpleado.get('eficiencia')!.value;
-      this.respuestaEncuestaEmpleado.inasistencia =
-        this.formaEmpleado.get('inasistencia')!.value;
-      if (this.formaEmpleado.get('esCompanero')!.value == 'si') {
-        this.respuestaEncuestaEmpleado.esCompanero = true;
-      } else {
-        this.respuestaEncuestaEmpleado.esCompanero = false;
-      }
-      if (deliverySi.checked) {
-        this.respuestaEncuestaEmpleado.esLimpio = true;
-      } else {
-        this.respuestaEncuestaEmpleado.esLimpio = false;
-      }
-      this.respuestaEncuestaEmpleado.detalle =
-        this.formaEmpleado.get('detalle')!.value;
-      this.respuestaEncuestaEmpleado.empleado = this.empleadoActivo;
+    this.notificacionesS.showSpinner();
+    try {
+      if (this.formaEmpleado.valid) {
+        const deliverySi = <HTMLInputElement>(
+          document.getElementById('deliverySi')
+        );
+        this.respuestaEncuestaEmpleado.eficiencia =
+          this.formaEmpleado.get('eficiencia')!.value;
+        this.respuestaEncuestaEmpleado.inasistencia =
+          this.formaEmpleado.get('inasistencia')!.value;
+        if (this.formaEmpleado.get('esCompanero')!.value == 'si') {
+          this.respuestaEncuestaEmpleado.esCompanero = true;
+        } else {
+          this.respuestaEncuestaEmpleado.esCompanero = false;
+        }
+        if (deliverySi.checked) {
+          this.respuestaEncuestaEmpleado.esLimpio = true;
+        } else {
+          this.respuestaEncuestaEmpleado.esLimpio = false;
+        }
+        this.respuestaEncuestaEmpleado.detalle =
+          this.formaEmpleado.get('detalle')!.value;
+        this.respuestaEncuestaEmpleado.empleado = this.empleadoActivo;
 
-      this.spinner = true;
-      this.firestoreService
-        .crearEncuestaSobreEmpleados(this.respuestaEncuestaEmpleado)
-        .then(() => {
-          this.presentToast(
-            'La encuesta fue registrada',
-            'success',
-            'checkmark-outline'
-          );
-          this.spinner = false;
-          this.respuestaEncuestaEmpleado = {};
-          this.empleadoActivo = null;
-        })
-        .catch(() => {
-          this.spinner = false;
-        });
-    } else {
-      this.presentToast(
-        'Debes completar todos los campos',
-        'warning',
-        'alert-circle-outline'
-      );
+        this.firestoreService
+          .crearEncuestaSobreEmpleados(this.respuestaEncuestaEmpleado)
+          .then(() => {
+            this.notificacionesS.presentToast(
+              'La encuesta fue registrada',
+              'success',
+              'checkmark-outline'
+            );
+            this.respuestaEncuestaEmpleado = {};
+            this.empleadoActivo = null;
+          });
+      } else {
+        this.notificacionesS.presentToast(
+          'Debes completar todos los campos',
+          'warning',
+          'alert-circle-outline'
+        );
+      }
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
     }
-  }
-
-  async presentToast(mensaje: string, color: string, icono: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1500,
-      icon: icono,
-      color: color,
-    });
-    await toast.present();
   }
 
 
 
   cerrarSesion() {
-    this.spinner = true;
-    this.authService.LogOut().then(() => {
-      this.spinner = false;
-    });
+    this.notificacionesS.showSpinner();
+    try {
+      this.authService.LogOut()
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+
+    }
   }
 
 
@@ -340,9 +363,9 @@ export class DevolucionDeSupervisorPage implements OnInit {
   }
 
   generarChartClienteHumor() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
+
       const ctx = (<any>document.getElementById('chartCliente1')).getContext(
         '2d'
       );
@@ -407,7 +430,7 @@ export class DevolucionDeSupervisorPage implements OnInit {
               callbacks: {
                 //@ts-ignore
                 labelPointStyle: (context) => {
-         
+
                   const total = encuestas.length;
                   if (context.dataIndex == 0) {
                     const totalMalo = listaHumor[0];
@@ -483,14 +506,21 @@ export class DevolucionDeSupervisorPage implements OnInit {
           },
         },
       });
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
+
+
   }
 
   generarChartClienteFrecuencia() {
-    this.spinner = true;
-    this.vistasChartsCliente = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
+      this.vistasChartsCliente = true;
+
       const ctx = (<any>document.getElementById('chartCliente2')).getContext(
         '2d'
       );
@@ -635,14 +665,19 @@ export class DevolucionDeSupervisorPage implements OnInit {
           },
         },
       });
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   generarChartClienteUsaAplicacion() {
-    this.spinner = true;
-    this.vistasChartsCliente = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
+      this.vistasChartsCliente = true;
+
       const ctx = (<any>document.getElementById('chartCliente3')).getContext(
         '2d'
       );
@@ -786,22 +821,27 @@ export class DevolucionDeSupervisorPage implements OnInit {
           },
         },
       });
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+    }
+
   }
 
   generarChartClienteDelivery() {
-    this.spinner = true;
-    this.vistasChartsCliente = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
+      this.vistasChartsCliente = true;
       const ctx = (<any>document.getElementById('chartCliente4')).getContext(
         '2d'
       );
-
+  
       const encuestas = this.listadoEncuestasClientes.filter(
         (e) => e.cliente.email == this.clienteActivo.email
       );
-
+  
       const colors = [
         '#ffc409',
         '#eb445a',
@@ -811,12 +851,12 @@ export class DevolucionDeSupervisorPage implements OnInit {
         '#0044ff',
         '#ee55ff',
       ];
-
+  
       let i = 0;
       const encuestasColors = encuestas.map(
         (_) => colors[(i = (i + 1) % colors.length)]
       );
-
+  
       let listaDelivery = [0, 0];
       encuestas.forEach((e) => {
         if (e.delivery == false) {
@@ -825,7 +865,7 @@ export class DevolucionDeSupervisorPage implements OnInit {
           listaDelivery[1]++;
         }
       });
-
+  
       this.chart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -942,7 +982,14 @@ export class DevolucionDeSupervisorPage implements OnInit {
           },
         },
       });
-    }, 1000);
+      
+    } catch (error) {
+      
+    }finally{
+      this.notificacionesS.hideSpinner();
+    }
+   
+   
   }
 
 
@@ -963,17 +1010,17 @@ export class DevolucionDeSupervisorPage implements OnInit {
   }
 
   generarChartEmpleadoEficiencia() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
+      
       const ctx = (<any>document.getElementById('chartEmpleado1')).getContext(
         '2d'
       );
-
+  
       const encuestas = this.listadoEncuestasEmpleados.filter(
         (e) => e.empleado.email == this.empleadoActivo.email
       );
-
+  
       const colors = [
         '#ffc409',
         '#eb445a',
@@ -983,12 +1030,12 @@ export class DevolucionDeSupervisorPage implements OnInit {
         '#0044ff',
         '#ee55ff',
       ];
-
+  
       let i = 0;
       const encuestasColors = encuestas.map(
         (_) => colors[(i = (i + 1) % colors.length)]
       );
-
+  
       let listaEficiencia = [0, 0, 0];
       encuestas.forEach((e) => {
         if (e.eficiencia < 4) {
@@ -999,7 +1046,7 @@ export class DevolucionDeSupervisorPage implements OnInit {
           listaEficiencia[2]++;
         }
       });
-
+  
       this.chart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -1105,21 +1152,25 @@ export class DevolucionDeSupervisorPage implements OnInit {
           },
         },
       });
-    }, 1000);
+    } catch (error) {
+      
+    }finally{
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   generarChartEmpleadoInasistencia() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
+      
       const ctx = (<any>document.getElementById('chartEmpleado2')).getContext(
         '2d'
       );
-
+  
       const encuestas = this.listadoEncuestasEmpleados.filter(
         (e) => e.empleado.email == this.empleadoActivo.email
       );
-
+  
       const colors = [
         '#ffc409',
         '#eb445a',
@@ -1129,12 +1180,12 @@ export class DevolucionDeSupervisorPage implements OnInit {
         '#0044ff',
         '#ee55ff',
       ];
-
+  
       let i = 0;
       const encuestasColors = encuestas.map(
         (_) => colors[(i = (i + 1) % colors.length)]
       );
-
+  
       let listaInasistencia = [0, 0, 0];
       encuestas.forEach((e) => {
         if (e.inasistencia == 2) {
@@ -1145,9 +1196,9 @@ export class DevolucionDeSupervisorPage implements OnInit {
           listaInasistencia[2]++;
         }
       });
-
+  
       console.log(listaInasistencia);
-
+  
       this.chart = new Chart(ctx, {
         type: 'pie',
         data: {
@@ -1257,13 +1308,16 @@ export class DevolucionDeSupervisorPage implements OnInit {
           },
         },
       });
-    }, 1000);
+    } catch (error) {
+      
+    }finally{
+      this.notificacionesS.hideSpinner();
+    }
   }
 
   generarChartEmpleadoEsCompanero() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
       const ctx = (<any>document.getElementById('chartEmpleado3')).getContext(
         '2d'
       );
@@ -1407,13 +1461,18 @@ export class DevolucionDeSupervisorPage implements OnInit {
           },
         },
       });
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+      this.notificacionesS.hideSpinner();
+
+    }
   }
 
   generarChartEmpleadoLimpieza() {
-    this.spinner = true;
-    setTimeout(() => {
-      this.spinner = false;
+    this.notificacionesS.showSpinner();
+    try {
       const ctx = (<any>document.getElementById('chartEmpleado4')).getContext(
         '2d'
       );
@@ -1562,6 +1621,12 @@ export class DevolucionDeSupervisorPage implements OnInit {
           },
         },
       });
-    }, 1000);
+
+    } catch (error) {
+
+    } finally {
+
+      this.notificacionesS.hideSpinner();
+    }
   }
 }

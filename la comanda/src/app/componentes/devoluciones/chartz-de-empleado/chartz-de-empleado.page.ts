@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-} from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';import {
+import {
   Chart,
   BarElement,
   BarController,
@@ -18,6 +16,7 @@ import { ToastController } from '@ionic/angular';import {
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { EncuestasService } from 'src/app/servicios/encuestas.service';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 
 @Component({
   selector: 'app-empleado-graficos',
@@ -28,7 +27,6 @@ export class ChartzDeEmpleadoPage implements OnInit {
 
   constructor(private fb: FormBuilder,
     private router: Router,
-    private toastController: ToastController,
     private encuestasSrv: EncuestasService) 
     {
       Chart.register(
@@ -372,4 +370,7 @@ export class ChartzDeEmpleadoPage implements OnInit {
     }, 500);
 
   }
+
+
+
 }

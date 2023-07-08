@@ -1,9 +1,4 @@
 <ion-content>
-  <div class="spinner">
-    <img src="../../assets/spinner.png " width="60%" [ngClass]="{'rotate-center' : this.spinner}"
-      *ngIf="this.spinner" />
-  </div>
-
   <ion-fab horizontal="end" vertical="bottom" slot="fixed" (click)="cerrarSesion()">
     <ion-fab-button color="warning">
       <ion-icon name="log-out-outline"></ion-icon>
@@ -37,7 +32,7 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-card *ngIf="authService.UsuarioActivo.perfil != 'supervisor' && authService.UsuarioActivo.perfil != 'dueño'"
+    <ion-card *ngIf="authService.UsuarioActivo.value.perfil!= 'supervisor' && authService.UsuarioActivo.value.perfil != 'dueño'"
       routerLink="/alta-cliente">
       <ion-card-header>
         <ion-card-title>Alta Cliente</ion-card-title>
@@ -53,16 +48,6 @@
       </ion-card-header>
       <ion-card-content>
         <img src="../../../assets/altaMesa.png" alt="mesa" />
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card *ngIf="authService.UsuarioActivo.perfil != 'supervisor' && authService.UsuarioActivo.perfil != 'dueño'"
-      routerLink="/alta-productos">
-      <ion-card-header>
-        <ion-card-title>Alta Producto</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <img src="../../../assets/altaProducto.png" alt="producto" />
       </ion-card-content>
     </ion-card>
   </div>

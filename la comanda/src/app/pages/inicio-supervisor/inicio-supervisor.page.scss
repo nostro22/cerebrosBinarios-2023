@@ -5,7 +5,21 @@ ion-content {
   --background: url('../../../assets/splashBackground.png') no-repeat center center fixed;
 }
 
+.botonFiltro{
+  margin-top: 15px;
+  box-shadow: 1px 8px 8px 0px rgba(0, 0, 0, 0.3);
+  // --background: #d8a198;    
+  margin-bottom: 10px;
+  color: black;
+   flex: 1; 
+  margin-right: 10px; 
+  
+}
 
+.botones-contenedor {
+  display: flex; /* Establece el contenedor como flexbox */
+  padding: 10px;
+}
 
 .boton {
   background-color: #dd6262;
@@ -101,4 +115,29 @@ ion-content {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+.sticky-btn-container {
+  position: fixed;
+  bottom: 40px; /* Ajusta esta propiedad para cambiar la distancia desde el borde inferior */
+  right: 20rem; /* Ajusta esta propiedad para cambiar la distancia desde el borde derecho */
+  z-index: 999; /* Asegura que el botón se muestre encima de otros elementos */
+}
+.sticky-btn-container2 {
+  position: fixed;
+  bottom: 40px; /* Ajusta esta propiedad para cambiar la distancia desde el borde inferior */
+  left: 19.5rem; /* Ajusta esta propiedad para cambiar la distancia desde el borde derecho */
+  z-index: 999; /* Asegura que el botón se muestre encima de otros elementos */
+}
+
+/* Estilo adicional opcional para que el botón sea más visible y atractivo */
+// .sticky-btn-container ion-fab-button{
+//   padding: 10px 20px;
+//   border-radius: 5px;
+//   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+// }
+
+
+h1{
+  color: #000000;
 }

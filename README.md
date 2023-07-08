@@ -1,6 +1,11 @@
 # cerebrosBinarios-2023
 Segundo-Parcial-PPS-La comanda
 ![XjEeadYo9ekD_1920_1080](https://github.com/nostro22/cerebrosBinarios-2023/assets/63791153/8de48134-d41b-48db-a209-1a693b522342)
+![QRS_propina](https://github.com/nostro22/cerebrosBinarios-2023/assets/63791153/c00727be-234f-4a5d-bbda-61ba2b6fc614)
+
+Modificaciones y correciones Solicitadas Por el Profesor Maximiliano Neiner para el recuperatorio
+
+![correciones](https://github.com/nostro22/cerebrosBinarios-2023/assets/63791153/34fdaae1-229e-4c23-a2d2-6e020e76c0b7)
 
 ![Tareas preliminares - Hoja 1](https://github.com/nostro22/cerebrosBinarios-2023/assets/63791153/3144de14-be4f-40e9-aa64-bb01049b7878)
 
@@ -14,3 +19,4 @@ Segundo-Parcial-PPS-La comanda
 ![8](https://github.com/nostro22/cerebrosBinarios-2023/assets/63791153/7c4f0412-cf84-485c-82f0-c0429c199223)
 ![9](https://github.com/nostro22/cerebrosBinarios-2023/assets/63791153/d3396307-d178-4b58-b574-e29bc1059f8b)
 ![10](https://github.com/nostro22/cerebrosBinarios-2023/assets/63791153/865685bd-e529-40c9-b3c6-a56e02526952)
+

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Camera, CameraResultType } from '@capacitor/camera';
 import { QrscannerService } from '../../servicios/qrscanner.service';
-import { ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/servicios/auth.service';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 
 
 @Component({
@@ -17,13 +17,12 @@ export class CrearSupervisorPage implements OnInit {
   scanActivo = false;
   foto: any;
   faltaFoto: boolean = false;
-  spinner: boolean = false;
   supervisor: any = {};
 
   constructor(
     private fb: FormBuilder,
     public scaner: QrscannerService,
-    private toastController: ToastController,
+    private notificacionesS: NotificacionesService,
     public authService: AuthService,
   ) {
     this.scaner.scanPrepare();
@@ -48,14 +47,14 @@ export class CrearSupervisorPage implements OnInit {
 
   async registrar() {
     if (this.forma.get('contrasena1').value != this.forma.get('contrasena2').value) {
-      this.presentToast(
+      this.notificacionesS.presentToast(
         'Las contraseñas deben ser iguales!',
         'danger',
         'alert-circle-outline'
       );
     } else {
       if (!this.foto) {
-        this.presentToast(
+        this.notificacionesS.presentToast(
           'Error! Debe agregar una foto',
           'danger',
           'alert-circle-outline'
@@ -65,29 +64,36 @@ export class CrearSupervisorPage implements OnInit {
           this.faltaFoto = false;
         }, 1000);
       } else {
-        this.spinner = true;
-        this.presentToast('Registrando!', 'success', 'thumbs-up-outline');
-        this.supervisor.nombre = this.forma.get('nombre')!.value;
-        this.supervisor.apellido = this.forma.get('apellido')!.value;
-        this.supervisor.dni = this.forma.get('dni')!.value;
-        this.supervisor.cuil = this.forma.get('cuil')!.value;
-        this.supervisor.perfil = this.forma.get('perfil')!.value;
-        this.supervisor.email = this.forma.get('email')!.value;
-        this.supervisor.contrasena = this.forma.get('contrasena1')!.value;
-        this.supervisor.foto = this.foto;
-        const user = await this.authService.onRegister(this.supervisor, true);
-        this.spinner = false;
+        this.notificacionesS.showSpinner();
+        let user:any;
+        try {
+          this.notificacionesS.presentToast('Registrando!', 'success', 'thumbs-up-outline');
+          this.supervisor.nombre = this.forma.get('nombre')!.value;
+          this.supervisor.apellido = this.forma.get('apellido')!.value;
+          this.supervisor.dni = this.forma.get('dni')!.value;
+          this.supervisor.cuil = this.forma.get('cuil')!.value;
+          this.supervisor.perfil = this.forma.get('perfil')!.value;
+          this.supervisor.email = this.forma.get('email')!.value;
+          this.supervisor.contrasena = this.forma.get('contrasena1')!.value;
+          this.supervisor.foto = this.foto;
+          user = await this.authService.onRegister(this.supervisor, true);
+
+        } catch (error) {
+
+        } finally {
+          this.notificacionesS.hideSpinner();
+        }
 
         if (user) {
-          this.presentToast(
+          this.notificacionesS.presentToast(
             'Usuario registrado!',
             'success',
             'thumbs-up-outline'
           );
           this.forma.reset();
-          this.src_imagen= '../../../assets/anonimo.png';
+          this.src_imagen = '../../../assets/anonimo.png';
         } else {
-          this.presentToast(
+          this.notificacionesS.presentToast(
             'Error! Hubo un error',
             'danger',
             'alert-circle-outline'
@@ -111,7 +117,7 @@ export class CrearSupervisorPage implements OnInit {
         this.foto = result.dataUrl;
       },
       (err) => {
-        this.presentToast(
+        this.notificacionesS.presentToast(
           'Error! Ocurrio un error al sacar la foto',
           'danger',
           'alert-circle-outline'
@@ -165,21 +171,11 @@ export class CrearSupervisorPage implements OnInit {
         contrasena2: this.forma.getRawValue().contrasena2,
         perfil: this.forma.getRawValue().perfil,
       });
-      this.presentToast('DNI escaneado', 'success', 'qr-code-outline');
+      this.notificacionesS.presentToast('DNI escaneado', 'success', 'qr-code-outline');
       this.scanActivo = false;
     });
   }
 
-  async presentToast(mensaje: string, color: string, icono: string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 2000,
-      icon: icono,
-      color: color,
-    });
-
-    await toast.present();
-  }
 
   pararScan() {
     this.scanActivo = false;

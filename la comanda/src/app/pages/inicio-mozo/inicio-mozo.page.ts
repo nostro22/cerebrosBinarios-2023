@@ -16,15 +16,18 @@ export class InicioMozoPage implements OnInit {
     private pushService: PushService,
     public auth: AuthService,
     public fire: FirestoreService,
-    private router:Router
-  ) {}
+    private router: Router
+  ) { }
 
   listadoPedidosNoAprobados: any[] = [];
   listadoPedidosPreparados: any[] = [];
+  listadoPedidosPagados: any[] = [];
+  listadoDePedidos: any[] = [];
   tokenCocinerosBartenders: string[] = [];
 
-  MostrarPreparados: boolean = false;
   MostrarNoAprobados: boolean = true;
+  MostrarPreparados: boolean = false;
+  MostrarPagados: boolean = false;
 
   ngOnInit() {
 
@@ -32,9 +35,24 @@ export class InicioMozoPage implements OnInit {
     this.mesasSrv.TraerPedidos('no aceptado').subscribe((pedidos) => {
       this.listadoPedidosNoAprobados = pedidos;
     });
+    this.mesasSrv.TraerPedidos('pagado').subscribe((pedidos) => {
+      this.listadoPedidosPagados = pedidos;
+    });
 
-    this.mesasSrv.TraerPedidos('cocinado').subscribe((pedidos) => {
-      this.listadoPedidosPreparados = pedidos;
+    this.mesasSrv.TraerPedidos("aceptado").subscribe((pedidos) => {
+      let auxArray = [];
+      this.listadoDePedidos = pedidos;
+      this.listadoDePedidos.forEach((unPedido) => {
+        if ((unPedido.hasOwnProperty("estaListoBartender") && unPedido.hasOwnProperty("estaListoCocinero")) && (unPedido.estaListoBartender && unPedido.estaListoCocinero)) {
+          auxArray.push(unPedido);
+        } else if (unPedido.hasOwnProperty("estaListoBartender") && unPedido.estaListoBartender && !unPedido.hasOwnProperty("estaListoCocinero")) {
+          auxArray.push(unPedido);
+
+        } else if (unPedido.hasOwnProperty("estaListoCocinero") && unPedido.estaListoCocinero && !unPedido.hasOwnProperty("estaListoBartender")) {
+          auxArray.push(unPedido);
+        }
+      })
+      this.listadoPedidosPreparados = auxArray;
     });
 
     this.mesasSrv.traerCocineros().subscribe((mozos: any) => {
@@ -44,23 +62,28 @@ export class InicioMozoPage implements OnInit {
           this.tokenCocinerosBartenders.push(element.token);
         }
       });
-      console.log(this.tokenCocinerosBartenders);
     });
   }
 
-  chatear()
-  {
+  chatear() {
     this.router.navigate(['chat-consulta'])
   }
 
   MostrarVistaPreparados() {
     this.MostrarPreparados = true;
     this.MostrarNoAprobados = false;
+    this.MostrarPagados = false;
   }
 
   MostrarVistaNoAprobados() {
     this.MostrarPreparados = false;
     this.MostrarNoAprobados = true;
+    this.MostrarPagados = false;
+  }
+  MostrarVistaPagados() {
+    this.MostrarPreparados = false;
+    this.MostrarNoAprobados = false;
+    this.MostrarPagados = true;
   }
 
   AprobarPedido(pedido: any) {
@@ -68,31 +91,51 @@ export class InicioMozoPage implements OnInit {
       this.enviarPushCocineros();
     });
   }
+  AprobarPagosPedido(pedido: any) {
+    this.mesasSrv.CambiarEstadoPedido(pedido, 'terminado').then(() => {
+    
+    });
+  }
 
   enviarPushCocineros() {
-    console.log(this.tokenCocinerosBartenders);
-    this.pushService
-      .sendPushNotification({
-        registration_ids: this.tokenCocinerosBartenders,
-        notification: {
-          title: 'Nuevo Pedido',
-          body: '¡Se aprobo un nuevo pedido!',
-        },
-      })
-      .subscribe((data) => {
-        console.log(data);
-      });
+    try {
+      console.log(this.tokenCocinerosBartenders);
+      this.pushService
+        .sendPushNotification({
+          registration_ids: this.tokenCocinerosBartenders,
+          notification: {
+            title: 'Nuevo Pedido',
+            body: '¡Se aprobo un nuevo pedido!',
+          },
+        })
+        .subscribe((data) => {
+          console.log(data);
+        });
+
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   EntregarPedido(pedido: any) {
     this.mesasSrv.CambiarEstadoPedido(pedido, 'entregado');
+    this.mesasSrv.CambiarEstadoPedidoCocinero(pedido, false);
+    this.mesasSrv.CambiarEstadoPedidoBartender(pedido, false);
   }
+
+  // RechazarPedido(pedido: any) {
+  //   this.mesasSrv.DesaprobarPedido(pedido);
+  // }
 
   RechazarPedido(pedido: any) {
-    this.mesasSrv.DesaprobarPedido(pedido);
+    this.mesasSrv.CambiarEstadoPedido(pedido, "no iniciado");
+  }
+  
+  RechazarPagoPedido(pedido: any) {
+    this.mesasSrv.CambiarEstadoPedido(pedido, "pagoRechazado");
   }
 
-  cerrarSesion(){
+  cerrarSesion() {
     this.auth.LogOut();
   }
 }

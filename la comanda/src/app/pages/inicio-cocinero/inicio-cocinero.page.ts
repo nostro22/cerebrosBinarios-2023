@@ -24,9 +24,10 @@ export class InicioCocineroPage implements OnInit {
   ngOnInit() {
 
     this.pushService.getUser(); 
-    this.mesasSrv.TraerPedidos("aceptado").subscribe((pedidos:any)=>
+    this.mesasSrv.TraerPedidosNoPreparadoCocinero().subscribe((pedidos:any)=>
     {
       this.listadoPedidosAprobados = pedidos;
+      console.log(this.listadoPedidosAprobados);
     })
 
     this.mesasSrv.traerMozos().subscribe((mozos:any)=>
@@ -42,7 +43,7 @@ export class InicioCocineroPage implements OnInit {
 
   EntregarPedido(pedido:any)
   {
-    this.mesasSrv.CambiarEstadoPedido(pedido, "cocinado").then(()=>
+    this.mesasSrv.CambiarEstadoPedidoCocinero(pedido, true).then(()=>
     {
       this.enviarPushMozos(pedido)
     })
@@ -60,8 +61,8 @@ export class InicioCocineroPage implements OnInit {
       .sendPushNotification({
         registration_ids: this.tokenMozos,
         notification: {
-          title: 'Pedido Listo!',
-          body: '¡El pedido de la mesa '+pedido.mesa+' esta listo!',
+          title: 'Productos de cocina listos!',
+          body: '¡La comida que pidio la mesa '+pedido.mesa+' esta lista!',
         },
       })
       .subscribe((data) => {

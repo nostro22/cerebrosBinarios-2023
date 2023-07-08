@@ -1,9 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { QrscannerService } from '../../servicios/qrscanner.service';
 import { MesasService } from 'src/app/servicios/mesas.service';
-import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
-import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 
 
 @Component({
@@ -13,40 +11,42 @@ import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
 })
 export class AbonarComponent implements OnInit {
 
-  constructor(private vibration: Vibration,public scaner : QrscannerService, public mesasSrv : MesasService, private router:Router, private toastController: ToastController) { }
+  constructor(private notificacionesS: NotificacionesService,public scaner : QrscannerService, public mesasSrv : MesasService) { }
   @Input() pedido:any;
   @Output() pago?: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   propina : number= 0;
-  MostrarPropina=false
-  MostrarPagar=true
+  // MostrarPropina=false
+  // MostrarPagar=true
   scanActivo=false;
 
 
-  ngOnInit() {}
-  async presentToast(mensaje: string, color: string) {
-    const toast = await this.toastController.create({message: mensaje,duration: 1500,color: color,});
-    await toast.present();
+  ngOnInit() {
+    // this.mesasSrv.traerPedido('sk8rgw2JLcyoh6NPh8QN').subscribe((unPedido) => {
+    //   this.pedido = unPedido;
+    // });
+    // console.log(this.pedido);
   }
 
-  agregarPropina()
-  {
-    this.MostrarPropina = true;
-    this.MostrarPagar = false;
-  }
 
-  recibirPropina($event: any)
-  {
-    this.pedido = $event;
-    this.MostrarPropina = false;
-    this.MostrarPagar = true;
-  }
+  // agregarPropina()
+  // {
+  //   this.MostrarPropina = true;
+  //   this.MostrarPagar = false;
+  // }
+
+  // recibirPropina($event: any)
+  // {
+  //   this.pedido = $event;
+  //   this.MostrarPropina = false;
+  //   this.MostrarPagar = true;
+  // }
 
   async Pagar()
   {
     this.mesasSrv.CambiarEstadoPedido(this.pedido, "pagado").then(()=>
     {
-      this.presentToast(`Pago exitoso!`,'success');
+      this.notificacionesS.presentToast(`Pago exitoso!`,'success');
       this.pago.emit(true);
     })
   }
@@ -56,27 +56,50 @@ export class AbonarComponent implements OnInit {
     document.querySelector('body').classList.remove('scanner-active');
     this.scaner.stopScanner()
   }
+
   async escanear() {
     document.querySelector('body').classList.add('scanner-active');
     this.scanActivo = true;
     this.scaner.startScan().then((result) => {
-      if(result == "propina")
-      {
-        this.scanActivo = false;
-        this.MostrarPagar = false;
-        this.MostrarPropina = true;
-      }
-      else
-      {
-        this.presentToast(`QR incorrecto!`,'danger');
-        this.vibration.vibrate(1000);
-        this.scanActivo = false;
-      }      
+      switch (result) {
+        case "propinaVeinte":
+          this.pedido.propina = this.pedido.total * 0.2;
+          this.pedido.porcentajePropina = 20;
+          this.scanActivo = false;
+          this.notificacionesS.presentToast(`Propina seleccionada de `+this.pedido.porcentajePropina+"%",'success');
+          break;
+        case "propinaQuince":
+          this.pedido.propina = this.pedido.total * 0.15;
+          this.pedido.porcentajePropina = 15;
+          this.scanActivo = false;
+          this.notificacionesS.presentToast(`Propina seleccionada de `+this.pedido.porcentajePropina+"%",'success');
+          break;
+        case "propinaDiez":
+          this.pedido.propina = this.pedido.total * 0.1;
+          this.pedido.porcentajePropina = 10;
+          this.scanActivo = false;
+          this.notificacionesS.presentToast(`Propina seleccionada de `+this.pedido.porcentajePropina+"%",'success');
+          break;
+        case "propinaCinco":
+          this.pedido.propina = this.pedido.total * 0.05;
+          this.pedido.porcentajePropina = 5;
+          this.scanActivo = false;
+          this.notificacionesS.presentToast(`Propina seleccionada de `+this.pedido.porcentajePropina+"%",'success');
+          break;
+        case "propinaCero":
+          this.pedido.propina = this.pedido.total * 0;
+          this.pedido.porcentajePropina = 0;
+          this.scanActivo = false;
+          this.notificacionesS.presentToast(`Propina seleccionada de `+this.pedido.porcentajePropina+"%",'success');
+          break;
+        default:
+          this.notificacionesS.presentToast(`QR incorrecto!`,'danger');
+          this.notificacionesS.vibrarError(1000);
+          this.scanActivo = false;
+          break;
+      }  
+      this.mesasSrv.CambiarEstadoPropina(this.pedido,this.pedido.propina,this.pedido.porcentajePropina)
+
     }).catch((err)=>{console.log("Erorr: ", err.message)});
   }
-
-
-
-  
- 
 }

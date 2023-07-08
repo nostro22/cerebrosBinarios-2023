@@ -114,3 +114,33 @@
     transform: rotate(360deg);
   }
 }
+
+/* Estilo básico para el contenedor del botón */
+.sticky-btn-container {
+  position: fixed;
+  top: 40px; /* Ajusta esta propiedad para cambiar la distancia desde el borde inferior */
+  right: 75px; /* Ajusta esta propiedad para cambiar la distancia desde el borde derecho */
+  z-index: 999; /* Asegura que el botón se muestre encima de otros elementos */
+}
+
+/* Estilo adicional opcional para que el botón sea más visible y atractivo */
+.sticky-btn-container button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.sticky-btn-container2 {
+  position: fixed;
+  top: 40px; /* Ajusta esta propiedad para cambiar la distancia desde el borde inferior */
+  right: 68px; /* Ajusta esta propiedad para cambiar la distancia desde el borde derecho */
+  z-index: 999; /* Asegura que el botón se muestre encima de otros elementos */
+}
+
+/* Estilo adicional opcional para que el botón sea más visible y atractivo */
+.sticky-btn-container2 button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+

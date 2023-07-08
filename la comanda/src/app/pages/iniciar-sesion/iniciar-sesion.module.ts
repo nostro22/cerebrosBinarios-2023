@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { IniciarSesionPageRoutingModule } from './iniciar-sesion-routing.module';
 import { IniciarSesionPage } from './iniciar-sesion.page';
-import { LoadingComponent } from 'src/app/componentes/loading/loading.component';
 
 @NgModule({
   imports: [
@@ -14,6 +13,6 @@ import { LoadingComponent } from 'src/app/componentes/loading/loading.component'
     IniciarSesionPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [IniciarSesionPage, LoadingComponent]
+  declarations: [IniciarSesionPage]
 })
 export class IniciarSesionPageModule {}

@@ -1,34 +1,90 @@
 <ion-content>
-  <h1 style="margin-bottom: 0px; margin-left: 2.6rem;">Metre - Asignar Mesas</h1>
-  <br>
-  <div style="text-align:center">
-    
-    <h1 class="texto" *ngIf="listadoClientes.length == 0">No hay clientes por acomodar</h1>
-        <div class="card_producto"  *ngFor="let cliente of listadoClientes">
-          <img class="img-producto" src="{{cliente.foto}}">
-         <div>
-           <div>
-             <h3>Cliente: {{cliente.nombre}}</h3>
-           </div>
 
-           <div *ngIf="cliente.mesaAsignada==null">
+  <br>
+  <!-- <div class="d-flex justify-content-center align-items-center" *ngIf="this.auth.UsuarioReserva.value.perfil !='supervisor' ">
+    <div>
+      <p>Liberar mesa:</p>
+    </div>
+    <div class="gap-2">
+      <button (click)="liberarMesa(1)" class="btn btn-primary" >Mesa 1</button>
+      <button  (click)="liberarMesa(2)"  class="btn btn-primary" >Mesa 2</button>
+      <button  (click)="liberarMesa(3)"  class="btn btn-primary" >Mesa 3</button>
+    </div>
+  </div> -->
+
+
+  <div *ngIf="this.auth.UsuarioReserva.value.perfil !='supervisor' ">
+    <h1 style="margin-bottom: 0px; margin-left: 2.6rem;">Metre - Asignar Mesas</h1>
+    <br>
+    <div style="text-align:center">
+
+      <h1 class="texto" *ngIf="listadoClientes.length == 0">No hay clientes por acomodar</h1>
+      <div class="card_producto" *ngFor="let cliente of listadoClientes">
+        <img class="img-producto" src="{{cliente.foto}}">
+        <div>
+          <div>
+            <h3>Cliente: {{cliente.nombre}}</h3>
+          </div>
+
+          <div *ngIf="cliente.mesaAsignada==null">
             <h3>Seleccione la mesa que quiera asignar</h3>
             <div class="div_botones_mesas">
-              <button (click)="asignarMesa(cliente,mesa.numero)" class="boton boton_mesa" *ngFor="let mesa of mesasDisponibles">{{mesa.numero}}</button>
+              <button (click)="asignarMesaRecorridoNormal(cliente,mesa)" class="boton boton_mesa"
+                *ngFor="let mesa of mesasDisponibles">{{mesa.numero}}</button>
             </div>
           </div>
 
           <div *ngIf="cliente.mesaAsignada!=null">
             <h3>El cliente ya tiene una mesa asignada</h3>
           </div>
-         </div>
-       </div> 
-
-    
-    <ion-fab horizontal="start" vertical="top" slot="fixed">
-      <ion-fab-button color="dark">
-        <ion-icon name="log-out-outline" (click)="auth.LogOut()"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
+        </div>
+      </div>
+    </div>
   </div>
+  <div class="mt-5" *ngIf="this.auth.UsuarioReserva.value.perfil=='supervisor'">
+    <h1 style="margin-bottom: 0px; margin-left: 2.6rem;">Dueño - Asignar Reservas</h1>
+    <br>
+    <div style="text-align:center">
+
+      <h1 class="texto" *ngIf="listadoClientesReservas.length == 0">No hay reservas por acomodar</h1>
+      <div class="card_producto" *ngFor="let cliente of listadoClientesReservas">
+
+        <img class="img-producto" src="{{cliente.foto}}">
+        <div>
+          <div>
+            <h3>Cliente: {{cliente.nombre}}</h3>
+            <h3>Dia: {{cliente.dia | timestampDate }}</h3>
+            <h3>Hora: {{cliente.horario}}</h3>
+          </div>
+
+          <div *ngIf="cliente.mesaAsignada==null">
+            <h3>Seleccione la mesa a asignar a la reserva o rechache la misma</h3>
+            <div class="div_botones_mesas">
+              <button (click)="AsignarMesaReserva(cliente,mesa)" class="boton boton_mesa"
+                *ngFor="let mesa of mesasDisponiblesReservas">{{mesa.numero}}</button>
+            </div>
+            <div>
+              <button (click)="rechazarReserva(cliente)" class="mt-2 border-1 text-white btn btn-danger">Rechazar Reserva</button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="cliente.mesaAsignada!=null">
+          <h3>La reserva ya tiene una mesa asignada</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ion-fab horizontal="start" vertical="top" slot="fixed">
+    <ion-fab-button (click)="auth.LogOut()" color="dark">
+      <ion-icon name="log-out-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab *ngIf="this.auth.UsuarioReserva.value.perfil=='supervisor'" horizontal="end" vertical="top" slot="fixed">
+    <ion-fab-button (click)="irASupervisor()" color="dark">
+      <ion-icon name="arrow-back-circle-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

@@ -20,10 +20,6 @@ export class ChatService {
       this.itemsCollection = this.afs.collection<any>('mensajes-chat', ref => ref.limit(20));
       return this.itemsCollection.valueChanges().subscribe((mensajes): void =>
         {
-          mensajes.forEach(mensaje => {
-            console.info(mensaje)
-            mensajes.unshift(mensaje);
-          });
           mensajes.sort((a: any, b: any) => {
             const dateA = a.fecha;
             const dateB = b.fecha;
@@ -39,16 +35,22 @@ export class ChatService {
         })
     }
 
-  agregarMensaje(message: any) {
-    let newMessage: any = {
-      nombre: message.nombre,
-      texto: message.texto,
-      fecha: this.formatDate(new Date()),
-      uid:message.uid
-    };
-
-    return this.afs.collection('mensajes-chat').add(newMessage);
-  }
+    agregarMensaje(message: any) {
+      console.log(message);
+     
+      let newMessage: any = {
+        nombre: message.nombre,
+        texto: message.texto,
+        fecha: this.formatDate(new Date()),
+        uid:message.uid,
+      };
+      if(message.hasOwnProperty("mesaQueSeLeEnviaMensaje"))
+      {
+        newMessage.mesaQueSeLeEnviaMensaje = message.mesaQueSeLeEnviaMensaje;
+      }
+  
+      return this.afs.collection('mensajes-chat').add(newMessage);
+    }
 
   formatDate = (date: any) => {
     return date.toLocaleString('es-AR')

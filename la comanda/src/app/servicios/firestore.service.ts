@@ -70,4 +70,32 @@ export class FirestoreService {
   async agregarAListaDeEspera(cliente: any) {
     return await this.angularFirestore.collection('lista-de-espera').doc(cliente.uid).set(cliente);
   }
+  async actualizarEstadosCliente(cliente: any) {
+    return await this.angularFirestore.collection('lista-de-espera').doc(cliente.uid).set(cliente,{merge:true});
+  }
+
+  // async actualizarEstadosListaEspera(cliente: any, nuevoEstado:any) {
+  //   return await this.angularFirestore.collection('lista-de-espera').doc(cliente.uid).set({estado: nuevoEstado}, {merge:true});
+  // }
+  async actualizarEstadosListaEspera(cliente: any, nuevoEstado: any) {
+    return await this.angularFirestore.collection('lista-de-espera').doc(cliente.uid).update({ estado: nuevoEstado });
+  }
+  
+
+
+  async actualizarCliente(cliente: any, numeroDeMesa:any) {
+    if(numeroDeMesa!="")
+    {
+      cliente.mesaQueEstaUtilizando = "mesa " +numeroDeMesa;
+    }
+    else{
+      cliente.mesaQueEstaUtilizando = "";
+    }
+    return await this.angularFirestore.collection('usuarios').doc(cliente.uid).set(cliente,{merge:true});
+  }
+
+  traerListaEspera() {
+    const coleccion = this.angularFirestore.collection('lista-de-espera');
+    return coleccion.valueChanges();
+  }
 }

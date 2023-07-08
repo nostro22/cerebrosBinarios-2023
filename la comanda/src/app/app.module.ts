@@ -14,11 +14,15 @@ import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ChartzDeClientePageModule } from './pages/chartz-de-cliente/chartz-de-cliente.module';
 
 @NgModule({
   declarations: [ AppComponent],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     IonicModule.forRoot(),
     AppRoutingModule,
     NgbModule,
@@ -30,6 +34,8 @@ import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    NgxSpinnerModule,
+    ChartzDeClientePageModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, Vibration],
   bootstrap: [AppComponent],

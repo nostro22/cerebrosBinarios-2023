@@ -1,15 +1,12 @@
 <ion-content>
-  <!-- VISTA DEL SPINNER -->
-  <div class="spinner">
-    <img
-      src="../../assets/spinner.png "
-      width="60%"
-      [ngClass]="{ 'rotate-center': this.spinner }"
-      *ngIf="this.spinner"
-    />
-  </div>
-
   <section class="preguntados-container">
+
+    <ion-fab horizontal="start" slot="fixed" style="transform: translateY(12%);">
+      <ion-fab-button color="warning" size="small" (click)="volverAlMenu()">
+        <ion-icon name="arrow-back-outline" ></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
     <div class="container d-flex flex-column justify-content-center">
       <h1 class="titulo-preguntados">PREGUNTADOS</h1>
       <p class="puntuacion">
@@ -40,11 +37,6 @@
               {{ option }}
             </button>
           </div>
-          <!-- <div *ngIf="!activeGame">
-            <button class="btn-reiniciar" (click)="restartGame()">
-              Reiniciar Juego
-            </button>
-          </div> -->
         </div>
       </div>
     </div>

@@ -204,7 +204,7 @@ ion-fab {
     font-size: 200%;
     text-shadow: 2px 2px #000000;
     width: 75%;
-    height: 18%;
+    height: 16%;
     padding-left: 4%;
     padding-right: 4%;
     padding-top: 3%;
@@ -218,14 +218,13 @@ ion-fab {
   display: flex;
   align-items: center;
   flex-direction: column;
-  top: 3rem;
+  top: 25vh;
 }
 
 .scan .qrcode {
   position: relative;
   width: 20rem;
   height: 20rem;
-  background: url("../../../assets/qr1.png");
   background-size: 20rem;
 }
 
@@ -235,10 +234,8 @@ ion-fab {
   top: 0;
   left: 0;
   width: 100%;
-  background: url("../../../assets/qr2.png");
   background-size: 20rem;
   overflow: hidden;
-  animation: animate 4s ease-in-out infinite;
 }
 
 @keyframes animate {
@@ -345,3 +342,5 @@ ion-fab {
     transform: rotate(360deg);
   }
 }
+
+

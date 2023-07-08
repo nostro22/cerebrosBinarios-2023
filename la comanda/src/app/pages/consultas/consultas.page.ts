@@ -1,6 +1,5 @@
 import { AuthService } from 'src/app/servicios/auth.service';
 import { Component,  OnInit } from '@angular/core';
-import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ChatService } from 'src/app/servicios/chat.service';
 import { MesasService } from 'src/app/servicios/mesas.service';
@@ -13,7 +12,17 @@ export class ConsultasPage implements OnInit {
   mensajes:any[];
   mensaje:string;
   chatroom = 'mensajes-pps4a';
-  constructor(public mesasSrv:MesasService,private toastController: ToastController,public router:Router,public chatService: ChatService,public authService:AuthService) 
+  
+  
+  //NUEVO
+  mesas:any;
+  mesaParaVer:any;
+  //////
+
+  constructor(public mesasSrv:MesasService,
+    public router:Router,
+    public chatService: ChatService,
+    public authService:AuthService) 
   {
     window.scrollTo(0, document.body.scrollHeight);
   }
@@ -21,11 +30,30 @@ export class ConsultasPage implements OnInit {
   ngOnInit() {
    
     this.chatService.cargarMensajes();
+
+    //NUEVOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+    this.mesasSrv.traerMesasOcupadas().subscribe((mesasOcupadas)=>{
+      this.mesas = mesasOcupadas;
+      this.mesaParaVer = "mesa " + mesasOcupadas[0]['numero'];
+      console.log(this.mesaParaVer);
+    })
+    ////////////////////////////////////////////////////
   }
+
+  //NUEVOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+  mesaSeleccionada(numeroMesa:any)
+  {
+    this.mesaParaVer = "mesa " + numeroMesa;
+    console.log(this.mesaParaVer);
+  }
+
+  ////////////////////////////////////////////////////
+
+
 
   atras()
   {
-    if(this.authService.UsuarioActivo.perfil == "cliente")
+    if(this.authService.UsuarioActivo.value.perfil == "cliente")
     {
       this.router.navigate(['menu-mesa'])
     }
@@ -35,37 +63,49 @@ export class ConsultasPage implements OnInit {
     }
   }
 
+  //NUEVOOOOOOOOOOOOOOOOOOOOOO
   enviarMensaje()
   {
-    let nombre =""
-    if(this.authService.UsuarioActivo.perfil == "empleado")
+    let nombre ="";
+    let mesaQueSeLeEnviaMensaje="";
+    let nuevoMensaje = {};
+    if(this.authService.UsuarioActivo.value.perfil == "empleado")
     {
-      nombre = "mozo"
+      nombre = this.authService.UsuarioActivo.value.nombre;
+      mesaQueSeLeEnviaMensaje = this.mesaParaVer;
     }
     else
     {
-      nombre = "mesa " + this.mesasSrv.numeroMesa
+      nombre = this.authService.UsuarioActivo.value.mesaQueEstaUtilizando;
     }
-    console.log(this.authService.UsuarioActivo.uid)
-    var nuevoMensaje=
+    console.log(this.authService.UsuarioActivo.value.uid)
+    
+
+    if(mesaQueSeLeEnviaMensaje == "")
     {
-      uid:this.authService.UsuarioActivo.uid,
-      nombre : nombre,
-      texto : this.mensaje,
+      console.log("entro primer if")
+      nuevoMensaje=
+      {
+        uid:this.authService.UsuarioActivo.value.uid,
+        nombre : nombre,
+        texto : this.mensaje,
+      }
     }
+    else
+    {
+      console.log("entro segundo if")
+      nuevoMensaje=
+      {
+        uid:this.authService.UsuarioActivo.value.uid,
+        nombre : nombre,
+        texto : this.mensaje,
+        mesaQueSeLeEnviaMensaje : mesaQueSeLeEnviaMensaje,
+      }
+    }    
+    
     this.chatService.agregarMensaje(nuevoMensaje)
     this.mensaje='';
   }
-
-  async presentToast(mensaje:string, color:string, icono:string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1500,
-      icon: icono,
-      color:color
-    });
-
-    await toast.present();
-  }
-
+  ////////////////////////////////
 }
+

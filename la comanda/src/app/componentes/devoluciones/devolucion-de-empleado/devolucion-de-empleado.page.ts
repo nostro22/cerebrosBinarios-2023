@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastController } from '@ionic/angular';
 import { AuthService } from 'src/app/servicios/auth.service';
 import { Router } from '@angular/router';
 import { Camera, CameraResultType } from '@capacitor/camera';
 import { EncuestasService } from 'src/app/servicios/encuestas.service';
+import { NotificacionesService } from 'src/app/servicios/notificaciones.service';
 
 @Component({
   selector: 'app-empleado-encuesta',
@@ -12,18 +12,14 @@ import { EncuestasService } from 'src/app/servicios/encuestas.service';
   styleUrls: ['./devolucion-de-empleado.page.scss'],
 })
 export class DevolucionDeEmpleadoPage implements OnInit {
-
-  
-
-  foto:any;
+  foto: any;
   public forma!: FormGroup;
-  respuesta:any={}
+  respuesta: any = {}
   constructor(private fb: FormBuilder,
-     private toastController: ToastController,
-     public authService:AuthService,
-     private router: Router,
-     private encuestas: EncuestasService ) 
-  {
+    private notificacionesS: NotificacionesService,
+    public authService: AuthService,
+    private router: Router,
+    private encuestas: EncuestasService) {
     this.forma = this.fb.group({
       'satisfaccion': ['', [Validators.required]],
       'comentario': [''],
@@ -33,40 +29,36 @@ export class DevolucionDeEmpleadoPage implements OnInit {
     });
   }
 
-  src_imagen="../../../assets/img/logopng.png"
-  si:boolean
-  no:boolean
-  valorRespuesta:boolean;
-  respondio:boolean = false;
+  src_imagen = "../../../assets/img/logopng.png"
+  si: boolean
+  no: boolean
+  valorRespuesta: boolean;
+  respondio: boolean = false;
 
   ngOnInit() {
   }
 
-  agregarRespuesta()
-  { 
-    if(!this.foto)
-    {
-      this.presentToast('Debe agregar una foto','danger','alert-circle-outline')
+  agregarRespuesta() {
+    if (!this.foto) {
+      this.notificacionesS.presentToast('Debe agregar una foto', 'danger', 'alert-circle-outline')
     }
-    else
-    {
+    else {
       let acomodados;
-      this.respuesta= 
+      this.respuesta =
       {
-        satisfaccion:this.forma.get('satisfaccion')!.value,
-        comentario:this.forma.get('comentario')!.value,
-        aTiempo:this.forma.get('aTiempo')!.value,
-        companeros:this.forma.get('companeros')!.value,
+        satisfaccion: this.forma.get('satisfaccion')!.value,
+        comentario: this.forma.get('comentario')!.value,
+        aTiempo: this.forma.get('aTiempo')!.value,
+        companeros: this.forma.get('companeros')!.value,
         clientes: this.valorRespuesta,
-        foto:this.foto,
-        empleado: this.authService.UsuarioActivo
+        foto: this.foto,
+        empleado: this.authService.UsuarioActivo.value
       }
-      if(this.encuestas.agregarRespuestaEmpleados(this.respuesta))
-      {
-        this.presentToast('La respuesta fue registrada correctamente!','success','thumbs-up-outline')
+      if (this.encuestas.agregarRespuestaEmpleados(this.respuesta)) {
+        this.notificacionesS.presentToast('La respuesta fue registrada correctamente!', 'success', 'thumbs-up-outline')
         this.encuestas.respondio = true;
-        switch(this.authService.UsuarioActivo.tipo)
-        {
+        console.log(JSON.stringify(this.authService.UsuarioActivo.value));
+        switch (this.authService.UsuarioActivo.value.tipo) {
           case "mozo":
             this.router.navigate(["home-mozo"])
             break;
@@ -77,12 +69,12 @@ export class DevolucionDeEmpleadoPage implements OnInit {
             break;
 
           case "bartender":
-            this.router.navigate(["home"])
+            this.router.navigate(["home-bartender"])
 
             break;
 
           case "cocinero":
-            this.router.navigate(["home"])
+            this.router.navigate(["home-cocinero"])
 
             break;
         }
@@ -90,74 +82,57 @@ export class DevolucionDeEmpleadoPage implements OnInit {
     }
   }
 
-  Saltear()
-  {
-    this.encuestas.respondio = true;
-    switch(this.authService.UsuarioActivo.tipo)
-    {
-      case "mozo":
-        this.router.navigate(["home-mozo"])
-        break;
+  Saltear() {
+    if (this.authService.UsuarioActivo.value?.tipo) {
+      this.encuestas.respondio = true;
+      let perfil = this.authService.UsuarioActivo.value.tipo;
+      console.log(perfil);
 
-      case "metre":
-        this.router.navigate(["home-mestre"])
-
-        break;
-
-      case "bartender":
-        this.router.navigate(["home-bartender"])
-
-        break;
-
-      case "cocinero":
-        this.router.navigate(["home-cocinero"])
-
-        break;
+      switch (perfil) {
+        case 'mozo':
+          this.router.navigate(['home-mozo']);
+          break;
+        case 'metre':
+          this.router.navigate(['home-mestre']);
+          break;
+        case 'bartender':
+          this.router.navigate(['home-bartender']);
+          break;
+        case 'cocinero':
+          this.router.navigate(['home-cocinero']);
+      }
     }
   }
 
-  onValorCapturado(value: any){
-    if(value == 1){
-      this.si=true
+
+  onValorCapturado(value: any) {
+    if (value == 1) {
+      this.si = true
       this.no = false;
       this.valorRespuesta = true;
     }
-    else
-    {
-      this.no=true
+    else {
+      this.no = true
       this.si = false;
       this.valorRespuesta = false;
     }
   }
-  
-  async sacarFoto()
-  {
-        const image = await Camera.getPhoto({
-          quality: 90,
-          allowEditing: false,
-          promptLabelPhoto: 'Elegir de la galeria',
-          promptLabelPicture: 'Sacar foto',
-          promptLabelHeader:'Foto',
-          resultType: CameraResultType.DataUrl
-        }).then((result) =>
-        {
-          this.src_imagen = result.dataUrl
-          this.foto = result.dataUrl
-        }, (err)=>
-        {
-          this.presentToast('Error! Ocurrio un error al sacar la foto','danger','alert-circle-outline')
-        })
+
+  async sacarFoto() {
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      promptLabelPhoto: 'Elegir de la galeria',
+      promptLabelPicture: 'Sacar foto',
+      promptLabelHeader: 'Foto',
+      resultType: CameraResultType.DataUrl
+    }).then((result) => {
+      this.src_imagen = result.dataUrl
+      this.foto = result.dataUrl
+    }, (err) => {
+      this.notificacionesS.presentToast('Error! Ocurrio un error al sacar la foto', 'danger', 'alert-circle-outline')
+    })
   };
 
-  async presentToast(mensaje:string, color:string, icono:string) {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1500,
-      icon: icono,
-      color:color
-    });
-
-    await toast.present();
-  }
 
 }

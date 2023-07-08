@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { InicioMetrePageRoutingModule } from './inicio-metre-routing.module';
 import { InicioMetrePage } from './inicio-metre.page';
+import { TimestampDatePipe } from 'src/app/pipes/timestamp-date.pipe';
 
 @NgModule({
   imports: [
@@ -12,6 +13,6 @@ import { InicioMetrePage } from './inicio-metre.page';
     IonicModule,
     InicioMetrePageRoutingModule
   ],
-  declarations: [InicioMetrePage]
+  declarations: [InicioMetrePage, TimestampDatePipe]
 })
 export class InicioMetrePageModule {}
